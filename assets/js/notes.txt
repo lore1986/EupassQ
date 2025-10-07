@@ -1,0 +1,2 @@
+        <form  action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" id="eupassq_quiz_form" class="rq-form" method="POST"  enctype="multipart/form-data">
+            <input name="action" value="eupass_qform_submit">

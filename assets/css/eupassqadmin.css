@@ -1,0 +1,39 @@
+/* Metabox */
+.eupassq-box {
+    margin: 12px 0;
+    padding: 10px;
+    font-size: 16px;
+}
+
+/* Label styling */
+.eupassq-label {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Radios */
+.eupassq-radios {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.eupassq-radios input[type="radio"] {
+    transform: scale(1.1); /* make radios bigger */
+    margin-right: 4px;
+}
+
+.eupassq-radios label {
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* Select dropdown */
+.eupassq-select {
+    width: 100%;
+    font-size: 15px;
+    padding: 6px 8px;
+}
