@@ -16,17 +16,21 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+require_once(plugin_dir_path(__DIR__) . 'eupassq/vendor/autoload.php'); 
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassqAdminInterface.php');
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassqDatabase.php');
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassqQuestionManager.php');
+include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassQGrader.php');
 
 use EupassQ\PhpClasses\EupassqAdminInterface;
 use EupassQ\PhpClasses\EupassqDatabase;
+use EupassQ\PhpClasses\EupassQGrader;
 use EupassQ\PhpClasses\EupassqQuestionManager;
 
 $dbGb = new EupassqDatabase();
+$grader = new EupassQGrader();
 $admin_interface = new EupassqAdminInterface($dbGb);
-$question_manager = new EupassqQuestionManager($dbGb);
+$question_manager = new EupassqQuestionManager($dbGb, $grader);
 
 
 add_action( 'admin_enqueue_scripts', [$admin_interface, 'eupassq_admin_enqueue_scripts']); 

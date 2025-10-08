@@ -3,30 +3,30 @@
 namespace EupassQ\PhpClasses;
 
 class EupassqQuestionManager {
+    
 
-    private $dbGb;
+    private $dbGb, $qGrad;
 
-    public function __construct($_dbGb) {
+    public function __construct($_dbGb, $_grader) {
 
         $this->dbGb = $_dbGb;
+        $this->qGrad = $_grader;
+
         add_shortcode( 'eupassq_quiz', [$this, 'EupassqQuestion_Generate_Quiz_Form'] );
         add_action('wp_ajax_eupass_qform_submit', [$this, 'Eupassq_handle_form_submission']);
         add_action('wp_ajax_nopriv_eupass_qform_submit', [$this, 'Eupassq_handle_form_submission']);
-        // add_action('admin_post_eupass_qform_submit', [$this, 'Eupassq_handle_form_submission']);
-        // add_action('admin_post_nopriv_eupass_qform_submit', [$this, 'Eupassq_handle_form_submission']);
-        
     }
+
 
 
     public function Eupassq_EnqueueQuestionScripts()
     {
+        wp_enqueue_style('eupassq_css', plugin_dir_url(__DIR__) . 'assets/css/eupassq.css');
         wp_enqueue_script('eq_qs_script',  plugin_dir_url(__DIR__) . 'assets/js/eq_qs_script.js', array('jquery'), null, false );
     
         wp_localize_script('eq_qs_script', 'EupQ_Ajax_Obj', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            //'templatesUrl' => plugin_dir_url(__FILE__)  . 'assets/html-templates/',
             'nonce' => wp_create_nonce('euq_pass_nonce')
-            // 'tifpBootstrap' => 'tfipf-bootstrap'
         ));
     }
 
@@ -87,50 +87,78 @@ class EupassqQuestionManager {
 
          ob_start();
         ?>
-        <form id="eupassq_quiz_form" class="rq-form" >
-            <input name="security" value="<?php echo wp_create_nonce('rq_ajax_nonce'); ?>">
-            <?php foreach ($question_pool as $index => $question) : ?>
-                <div class="eupassq-question" data-index="<?php echo $index; ?>" 
-                    data-euqtpe="<?php echo $question['euqtpe']; ?>" data-euid="<?php echo $question['euqid']; ?>">
+        <div class="EupassQ-style">
+            <form id="eupassq_quiz_form" class="EupassQ-form" >
+                <input type="hidden" name="security" value="<?php echo wp_create_nonce('rq_ajax_nonce'); ?>">
 
-                    <label><strong><?php echo esc_html($question['euqcontent']); ?></strong></label><br>
+                <?php foreach ($question_pool as $index => $question) : ?>
+                <div class="eupassq-question card mb-4 shadow-sm p-3" 
+                    data-index="<?php echo $index; ?>" 
+                    data-euqtpe="<?php echo $question['euqtpe']; ?>" 
+                    data-euid="<?php echo $question['euqid']; ?>">
 
-                    <?php if($question['euqtpe'] == 'text') { ?>
-                        <textarea name="eupassq_qansw[<?php echo $index; ?>]" rows="3" style="width:100%;"></textarea>
-                    <?php } else { ?>
-                        <button type="button" class="start-record">Start Recording</button>
-                        <button type="button" class="stop-record" disabled>Stop Recording</button>
-                        <audio controls class="audio-playback"></audio>
-                        <button type="button" class="re-record" style="display:none;">Re-record</button>
-                        <input  name="eupassq_qansw[<?php echo $index; ?>]" class="audio-data"/>
-                    <?php } ?>
+                    <div class="card-body">
+                        <label class="form-label fw-bold mb-2">
+                            <?php echo esc_html($question['euqcontent']); ?>
+                        </label>
 
-                    <input name="eupassq_qi[<?php echo $index; ?>]" value="<?php echo $question['euqid']; ?>"/>
-                
+                        <?php if ($question['euqtpe'] == 'text') : ?>
+                            <textarea 
+                                name="eupassq_qansw[<?php echo $index; ?>]" 
+                                class="form-control EupassQ-input" 
+                                rows="3"
+                                placeholder="Type your answer here..."></textarea>
+
+                        <?php else : ?>
+                            <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+                                <button type="button" class="btn btn-primary start-record">🎙 Start Recording</button>
+                                <button type="button" class="btn btn-danger stop-record" disabled>⏹ Stop Recording</button>
+                            </div>
+
+                            <div class="mt-3 reset-btn-div">
+                                <audio controls class="audio-playback w-100"></audio>
+                            </div>
+
+                            <input type="hidden" 
+                                name="eupassq_qansw[<?php echo $index; ?>]" 
+                                class="audio-data"/>
+                        <?php endif; ?>
+
+                        <input type="hidden" name="eupassq_qi[<?php echo $index; ?>]" value="<?php echo $question['euqid']; ?>"/>
+                    </div>
                 </div>
-                <hr>
-            <?php endforeach; ?>
-            <button id="eupassq_quiz_form_submit" onclick="submit_form_temp()" type="button">Submit Answers</button>
-            <div id="rq-response" style="margin-top:10px;"></div>
-        </form>
+                <?php endforeach; ?>
+
+                <div class="text-center">
+                    <button id="eupassq_quiz_form_submit" 
+                            onclick="SubmitMyQuiz()" 
+                            type="button" 
+                            class="btn btn-success EupassQ-submit">
+                            Submit Answers
+                    </button>
+                </div>
+
+                <div id="rq-response" class="mt-3 text-center"></div>
+            </form>
+            </div>
+
         <?php
 
         return ob_get_clean();
         
-        //return '<pre> Audio Pool: ' . print_r($question_pool, true) . '</pre>' ;
     }
 
     function EupassQ_Upload_File( $file ) {
 
         require_once(ABSPATH . 'wp-admin/includes/file.php');
 
-        add_filter( 'upload_dir', 'EupassQ_Upload_Dir' );
+        add_filter( 'upload_dir', [$this, 'EupassQ_Upload_Dir'] );
 
 
         $uploaded = wp_handle_upload( $file, array( 'test_form' => false ) );
 
     
-        remove_filter( 'upload_dir', 'EupassQ_Upload_Dir' );
+        remove_filter( 'upload_dir',  [$this, 'EupassQ_Upload_Dir'] );
 
         return $uploaded;
     }
@@ -150,7 +178,7 @@ class EupassqQuestionManager {
     function Eupassq_handle_form_submission() {
         
         // Security check
-        check_ajax_referer('rq_ajax_nonce', 'security');
+        //check_ajax_referer('rq_ajax_nonce', 'security');
 
 
         $questions = isset($_POST['eupassq_qi']) ? (array) $_POST['eupassq_qi'] : [];
@@ -178,39 +206,52 @@ class EupassqQuestionManager {
                     break;
                 case 'audio':
                     {
-                        $file = [
-                            'name'     => $_FILES['eupassq_qansw']['name'][$index],
-                            'type'     => $_FILES['eupassq_qansw']['type'][$index],
-                            'tmp_name' => $_FILES['eupassq_qansw']['tmp_name'][$index],
-                            'error'    => $_FILES['eupassq_qansw']['error'][$index],
-                            'size'     => $_FILES['eupassq_qansw']['size'][$index],
-                        ];
+                        $file = null;
+                        
+                        foreach($_FILES as $key => $value) {
+
+                            $splitted = explode('_', $key);
+                            $lid = $splitted[2];
+                            
+                            if($lid == $squ->euqid)
+                            {
+                                $file = [
+                                    'name'     => $key . '_' . $value['name'],
+                                    'type'     => $value['type'],
+                                    'tmp_name' => $value['tmp_name'],
+                                    'error'    => $value['error'],
+                                    'size'     => $value['size'],
+                                ];
+                                
+
+                                $upload = $this->EupassQ_Upload_File($file);
+
+                                if (!isset($upload['error'])) {
+                                    $entry['answer'] = $upload['url']; //url of recording
+                                }
+                            }
+                        }
+                       
                     }
                     break;
                 default:
                     ///here case type unknown return error/ unknown type should not be picked
                     break;
             }
-            
-                
-
-                // Use WordPress to safely handle upload
-                require_once(ABSPATH . 'wp-admin/includes/file.php');
-                $upload = wp_handle_upload($file, ['test_form' => false]);
-
-                if (!isset($upload['error'])) {
-                    $entry['answer_audio'] = $upload['url']; // store URL or save to DB
-                
-            }
 
             $processed[] = $entry;
         }
 
-        // TODO: Save results to database if needed
-        // e.g., $wpdb->insert(...)
+        wp_send_json_success($processed);
 
-        wp_send_json_success('Answers received successfully');
+        //store answers and questions in temp_database to retrieve it next
+        //for audio store name of the audio (we know the location)
+        //if success display card "see your results" to reload page
+        //here we need a new table and register a new page template (the tricky way)
+        //page for now will display array of answers and feedback from openai
+
+        //wp_send_json_success('Answers received successfully');
     }
 
-    
+
 }
