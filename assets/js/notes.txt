@@ -1,2 +1,119 @@
-        <form  action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" id="eupassq_quiz_form" class="rq-form" method="POST"  enctype="multipart/form-data">
-            <input name="action" value="eupass_qform_submit">
+async function isVoiceTooLow(audioBlob, thresholdDb = -35) {
+  
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+    const channelData = audioBuffer.getChannelData(0); 
+    const len = channelData.length;
+
+
+    let sumSquares = 0;
+    for (let i = 0; i < len; i++) {
+        const sample = channelData[i];
+        sumSquares += sample * sample;
+    }
+    const rms = Math.sqrt(sumSquares / len);
+    const db = 20 * Math.log10(rms);
+
+    return db < thresholdDb;
+}
+
+async function improve_audio_with_noise_reduction(audioBlob) {
+  
+    const tempCtx = new AudioContext();
+  const arrayBuffer = await audioBlob.arrayBuffer();
+  const decodedBuffer = await tempCtx.decodeAudioData(arrayBuffer);
+
+
+  const offlineCtx = new OfflineAudioContext(
+    decodedBuffer.numberOfChannels,
+    decodedBuffer.length,
+    decodedBuffer.sampleRate
+  );
+
+  const source = offlineCtx.createBufferSource();
+  source.buffer = decodedBuffer;
+
+  const lowShelf = offlineCtx.createBiquadFilter();
+  lowShelf.type = "lowshelf";
+  lowShelf.frequency.value = 80;
+  lowShelf.gain.value = -20; 
+
+  const highPass = offlineCtx.createBiquadFilter();
+  highPass.type = "highpass";
+  highPass.frequency.value = 80;
+
+  const presenceBoost = offlineCtx.createBiquadFilter();
+  presenceBoost.type = "peaking";
+  presenceBoost.frequency.value = 3000;
+  presenceBoost.Q.value = 1.5;
+  presenceBoost.gain.value = 3;
+
+  const highShelf = offlineCtx.createBiquadFilter();
+  highShelf.type = "highshelf";
+  highShelf.frequency.value = 6000;
+  highShelf.gain.value = 2;
+
+  const noiseGate = offlineCtx.createDynamicsCompressor();
+  noiseGate.threshold.value = -30;
+  noiseGate.knee.value = 40;
+  noiseGate.ratio.value = 2; 
+  noiseGate.attack.value = 0.03;
+  noiseGate.release.value = 0.025;
+
+  source.connect(lowShelf)
+        .connect(highPass)
+        .connect(presenceBoost)
+        .connect(highShelf)
+        .connect(noiseGate)
+        .connect(offlineCtx.destination);
+
+  source.start(0);
+  const renderedBuffer = await offlineCtx.startRendering();
+  const improvedBlob = bufferToWave(renderedBuffer);
+
+  return improvedBlob;
+}
+
+//i did not wrote the following function -> it's ai generated i do not know transforming buffer to audio wave.
+//it is like a translator for a standard format
+function bufferToWave(abuffer) {
+  const numOfChan = abuffer.numberOfChannels,
+        length = abuffer.length * numOfChan * 2 + 44,
+        buffer = new ArrayBuffer(length),
+        view = new DataView(buffer),
+        channels = [],
+        sampleRate = abuffer.sampleRate;
+
+  let offset = 0;
+  function writeString(s) { for (let i = 0; i < s.length; i++) view.setUint8(offset + i, s.charCodeAt(i)); }
+
+  // RIFF header
+  writeString('RIFF'); offset += 4;
+  view.setUint32(offset, 36 + abuffer.length * numOfChan * 2, true); offset += 4;
+  writeString('WAVE'); offset += 4;
+  writeString('fmt '); offset += 4;
+  view.setUint32(offset, 16, true); offset += 4;
+  view.setUint16(offset, 1, true); offset += 2;
+  view.setUint16(offset, numOfChan, true); offset += 2;
+  view.setUint32(offset, sampleRate, true); offset += 4;
+  view.setUint32(offset, sampleRate * numOfChan * 2, true); offset += 4;
+  view.setUint16(offset, numOfChan * 2, true); offset += 2;
+  view.setUint16(offset, 16, true); offset += 2;
+  writeString('data'); offset += 4;
+  view.setUint32(offset, abuffer.length * numOfChan * 2, true); offset += 4;
+
+  for (let ch = 0; ch < numOfChan; ch++) channels.push(abuffer.getChannelData(ch));
+  let sample = 0;
+  while (sample < abuffer.length) {
+    for (let ch = 0; ch < numOfChan; ch++) {
+      const s = Math.max(-1, Math.min(1, channels[ch][sample]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      offset += 2;
+    }
+    sample++;
+  }
+
+  return new Blob([buffer], { type: "audio/wav" });
+}

@@ -19,6 +19,25 @@ class EupassqDatabase {
         add_action('init', [$this, 'Eupassq_Create_Tables']);
     }
 
+    public function Eupassq_return_Setting_value($key)
+    {
+        $table = $this->tablePrefix . 'eupass_set';
+        return $this->_wpdb->get_row($this->_wpdb->prepare("SELECT * FROM $table WHERE euq_key = %s", $key))->euq_val;
+    }
+
+    public function EupassQ_QuizId_randomizer()
+    {
+        $d_arr = 'abcdefghilmnopqrstuwvyz123456789';
+        $cod = '';
+
+        for ($i=0; $i < 8; $i++) { 
+            
+            $cod .= $d_arr[rand(0, strlen($d_arr)-1)];
+        }
+
+        return $cod;
+    }
+
 
     public function Eupassq_Get_All_Questions_Of_Level($euqlvl)
     {
@@ -27,7 +46,6 @@ class EupassqDatabase {
             WHERE euqlvl = %s", $euqlvl), ARRAY_A);
 
     }
-
 
     public function Eupassq_Find_Single_Question_PostId($postid)
     {
@@ -119,24 +137,32 @@ class EupassqDatabase {
             return $result_update;
         }
         
-       
     }
+
+    public function Eupassq_Get_Tmp_Answers($code)
+    {
+        $eupassq_tmp_quiz = $this->_wpdb->prefix . 'eupassq_tmp';
+
+        return $this->_wpdb->get_results($this->_wpdb->prepare("SELECT * FROM $eupassq_tmp_quiz 
+            WHERE euqtid = %s", $code), ARRAY_A);
+
+    }
+
 
     public function Eupassq_Create_Tables() {
   
         
         $charset_collate = $this->_wpdb->get_charset_collate();
-
-        $eupassq_questions = $this->_wpdb->prefix . 'eupqs';
-
+        $new_install_sec = false;
+        $eupassq_questions = $this->_wpdb->prefix . 'eupqs' ;
+        $eupassq_tmp_quiz = $this->_wpdb->prefix . 'eupassq_tmp';
+        $eupassq_sec = $this->_wpdb->prefix . 'eupass_set';
 
         $sql = [];
 
-        if ($this->_wpdb->get_var("SHOW TABLES LIKE '{$eupassq_questions}'") === $eupassq_questions) {
-            return;
-        } else {
-         
-            $sql[] = "CREATE TABLE $eupassq_questions (
+        if (!($this->_wpdb->get_var("SHOW TABLES LIKE '{$eupassq_questions}'") === $eupassq_questions)) {
+
+            $sql_1 = "CREATE TABLE $eupassq_questions (
                 euqid BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                 euqtpe ENUM('text','audio') NOT NULL,
                 euqlvl ENUM('A1','A2','B1','B2','C1', 'C2') NOT NULL,
@@ -147,14 +173,102 @@ class EupassqDatabase {
                 PRIMARY KEY (euqid)
             ) $charset_collate;";
 
-            require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-            foreach ($sql as $query) {
-                dbDelta($query);
-            }
+            array_push($sql, $sql_1);
+        }
+
+        if (!($this->_wpdb->get_var("SHOW TABLES LIKE '{$eupassq_tmp_quiz}'") === $eupassq_tmp_quiz)) {
+  
+            $sql_2 = "CREATE TABLE $eupassq_tmp_quiz (
+                euqiidd BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                euqtid CHAR(8) NOT NULL ,
+                eupqid BIGINT UNSIGNED NOT NULL,
+                eupquid BIGINT UNSIGNED NOT NULL,
+                euqanswer TEXT NOT NULL, 
+                PRIMARY KEY (euqiidd)
+            ) $charset_collate;";
+
+            array_push($sql, $sql_2);
+        }
+
+
+
+        if(!($this->_wpdb->get_var("SHOW TABLES LIKE '{$eupassq_sec}'") === $eupassq_sec))
+        {
+
+            $sql_e = "CREATE TABLE $eupassq_sec (
+                euq_key VARCHAR(255) NOT NULL,
+                euq_val TEXT NOT NULL , 
+                PRIMARY KEY (euq_key) 
+            ) $charset_collate;";
+
+
+            $new_install_sec = true;
+            array_push($sql, $sql_e);
         }
 
         
+
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        foreach ($sql as $query) {
+            dbDelta($query);
+        }
+
+        if($new_install_sec)
+        {
+            
+            $config = [
+                "private_key_bits" => 2048,
+                "private_key_type" => OPENSSL_KEYTYPE_RSA,
+            ];
+
+            $privateKeyString = '';
+
+            $private_key = openssl_pkey_new($config);
+            openssl_pkey_export($private_key, $privateKeyString);
+            $details = openssl_pkey_get_details($private_key);
+            $public_key = $details['key'];
+
+            $this->_wpdb->insert($eupassq_sec, [
+                'euq_key' => 'privkey',
+                'euq_val' => $privateKeyString
+            ]);
+            $this->_wpdb->insert($eupassq_sec, [
+                'euq_key' => 'pubkey',
+                'euq_val' => $public_key
+            ]);
+        }
           
     }
+
+    public function Eupassq_Insert_Quiz_Entry($objArr)
+    {
+
+
+        $eupassq_tmp_quiz = $this->_wpdb->prefix . 'eupassq_tmp';
+        $code = $this->EupassQ_QuizId_randomizer();
+
+        foreach ($objArr as $euqa) {
+            
+            $dObj = array(
+                'euqtid' => $code,
+                'eupqid' => $euqa['question_id'],
+                'eupquid' => $euqa['uid'],
+                'euqanswer' => $euqa['answer']
+            );
+
+            $dObjFormat = array('%s', '%d', '%d', '%s');
+
+            $result_insert = $this->_wpdb->insert($eupassq_tmp_quiz, $dObj, $dObjFormat);
+            
+            if($result_insert)
+            {
+                $s=0;
+            }
+        }
+ 
+        return $code;
+    }
+
+
 
 }

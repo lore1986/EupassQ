@@ -5,12 +5,12 @@ namespace EupassQ\PhpClasses;
 class EupassqQuestionManager {
     
 
-    private $dbGb, $qGrad;
+    private $dbGb, $nc;
 
-    public function __construct($_dbGb, $_grader) {
+    public function __construct($_dbGb, $_nc) {
 
         $this->dbGb = $_dbGb;
-        $this->qGrad = $_grader;
+        $this->nc = $_nc;
 
         add_shortcode( 'eupassq_quiz', [$this, 'EupassqQuestion_Generate_Quiz_Form'] );
         add_action('wp_ajax_eupass_qform_submit', [$this, 'Eupassq_handle_form_submission']);
@@ -18,15 +18,17 @@ class EupassqQuestionManager {
     }
 
 
-
     public function Eupassq_EnqueueQuestionScripts()
     {
         wp_enqueue_style('eupassq_css', plugin_dir_url(__DIR__) . 'assets/css/eupassq.css');
         wp_enqueue_script('eq_qs_script',  plugin_dir_url(__DIR__) . 'assets/js/eq_qs_script.js', array('jquery'), null, false );
-    
+
+       
         wp_localize_script('eq_qs_script', 'EupQ_Ajax_Obj', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('euq_pass_nonce')
+            'nonce' => [
+                'quiz_out' => $this->nc::create($this->nc::QUIZ_SUBMIT) 
+            ]
         ));
     }
 
@@ -70,6 +72,15 @@ class EupassqQuestionManager {
 
         $question_pool = $this->dbGb->Eupassq_Get_All_Questions_Of_Level($levelin);
 
+
+        //fix this
+        if($question_pool == null)
+        {
+            ob_start();
+            ?> <h3>No questions available</h3> <?php
+            return ob_get_clean();
+        }
+
         $audio_pool = [];
         $text_pool = [];
 
@@ -89,44 +100,42 @@ class EupassqQuestionManager {
         ?>
         <div class="EupassQ-style">
             <form id="eupassq_quiz_form" class="EupassQ-form" >
-                <input type="hidden" name="security" value="<?php echo wp_create_nonce('rq_ajax_nonce'); ?>">
-
                 <?php foreach ($question_pool as $index => $question) : ?>
-                <div class="eupassq-question card mb-4 shadow-sm p-3" 
-                    data-index="<?php echo $index; ?>" 
-                    data-euqtpe="<?php echo $question['euqtpe']; ?>" 
-                    data-euid="<?php echo $question['euqid']; ?>">
+                    <div class="eupassq-question card mb-4 shadow-sm p-3" 
+                        data-index="<?php echo $index; ?>" 
+                        data-euqtpe="<?php echo $question['euqtpe']; ?>" 
+                        data-euid="<?php echo $question['euqid']; ?>">
 
-                    <div class="card-body">
-                        <label class="form-label fw-bold mb-2">
-                            <?php echo esc_html($question['euqcontent']); ?>
-                        </label>
+                        <div class="card-body">
+                            <label class="form-label fw-bold mb-2">
+                                <?php echo esc_html($question['euqcontent']); ?>
+                            </label>
 
-                        <?php if ($question['euqtpe'] == 'text') : ?>
-                            <textarea 
-                                name="eupassq_qansw[<?php echo $index; ?>]" 
-                                class="form-control EupassQ-input" 
-                                rows="3"
-                                placeholder="Type your answer here..."></textarea>
+                            <?php if ($question['euqtpe'] == 'text') : ?>
+                                <textarea 
+                                    name="eupassq_qansw[<?php echo $index; ?>]" 
+                                    class="form-control EupassQ-input" 
+                                    rows="3"
+                                    placeholder="Type your answer here..."></textarea>
 
-                        <?php else : ?>
-                            <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
-                                <button type="button" class="btn btn-primary start-record">🎙 Start Recording</button>
-                                <button type="button" class="btn btn-danger stop-record" disabled>⏹ Stop Recording</button>
-                            </div>
+                            <?php else : ?>
+                                <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+                                    <button type="button" class="btn btn-primary start-record">🎙 Start Recording</button>
+                                    <button type="button" class="btn btn-danger stop-record" disabled>⏹ Stop Recording</button>
+                                </div>
 
-                            <div class="mt-3 reset-btn-div">
-                                <audio controls class="audio-playback w-100"></audio>
-                            </div>
+                                <div class="mt-3 reset-btn-div">
+                                    <audio controls class="audio-playback w-100"></audio>
+                                </div>
 
-                            <input type="hidden" 
-                                name="eupassq_qansw[<?php echo $index; ?>]" 
-                                class="audio-data"/>
-                        <?php endif; ?>
+                                <input type="hidden" 
+                                    name="eupassq_qansw[<?php echo $index; ?>]" 
+                                    class="audio-data"/>
+                            <?php endif; ?>
 
-                        <input type="hidden" name="eupassq_qi[<?php echo $index; ?>]" value="<?php echo $question['euqid']; ?>"/>
+                            <input type="hidden" name="eupassq_qi[<?php echo $index; ?>]" value="<?php echo $question['euqid']; ?>"/>
+                        </div>
                     </div>
-                </div>
                 <?php endforeach; ?>
 
                 <div class="text-center">
@@ -178,8 +187,9 @@ class EupassqQuestionManager {
     function Eupassq_handle_form_submission() {
         
         // Security check
-        //check_ajax_referer('rq_ajax_nonce', 'security');
+        $this->nc::die_if_invalid( $this->nc::QUIZ_SUBMIT, 'eupassqnc');
 
+        
 
         $questions = isset($_POST['eupassq_qi']) ? (array) $_POST['eupassq_qi'] : [];
         $answers   = isset($_POST['eupassq_qansw'])   ? (array) $_POST['eupassq_qansw']   : [];
@@ -196,6 +206,7 @@ class EupassqQuestionManager {
             $entry = [
                 'question_id' => $qid,
                 'answer' => null,
+                'uid' => 3
             ];
 
             switch ($squ->euqtpe) {
@@ -242,15 +253,18 @@ class EupassqQuestionManager {
             $processed[] = $entry;
         }
 
-        wp_send_json_success($processed);
 
-        //store answers and questions in temp_database to retrieve it next
-        //for audio store name of the audio (we know the location)
-        //if success display card "see your results" to reload page
-        //here we need a new table and register a new page template (the tricky way)
-        //page for now will display array of answers and feedback from openai
+        $code = $this->dbGb->Eupassq_Insert_Quiz_Entry($processed);
+            
 
-        //wp_send_json_success('Answers received successfully');
+        $pretty_url = home_url('/results/' . $code);
+
+        $res_obj = [
+            'redirect' => $pretty_url
+        ];
+
+        wp_send_json_success($res_obj);
+
     }
 
 

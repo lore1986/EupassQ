@@ -20,21 +20,46 @@ require_once(plugin_dir_path(__DIR__) . 'eupassq/vendor/autoload.php');
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassqAdminInterface.php');
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassqDatabase.php');
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassqQuestionManager.php');
-include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassQGrader.php');
+include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassQNonce.php');
+include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassQTemplater.php');
+
+
+
+register_activation_hook( __FILE__, 'eupassqtemplate_clear_template_cache' );
+register_deactivation_hook( __FILE__, 'eupassqtemplate_clear_template_cache');
 
 use EupassQ\PhpClasses\EupassqAdminInterface;
 use EupassQ\PhpClasses\EupassqDatabase;
-use EupassQ\PhpClasses\EupassQGrader;
+use EupassQ\PhpClasses\EupassQ_Nonce;
+use EupassQ\PhpClasses\EupassQNonce;
 use EupassQ\PhpClasses\EupassqQuestionManager;
+use EupassQ\PhpClasses\EupassQTemplate;
+
+
+
 
 $dbGb = new EupassqDatabase();
-$grader = new EupassQGrader();
+$nc = new EupassQNonce();
+$templater = new EupassQTemplate($dbGb);
 $admin_interface = new EupassqAdminInterface($dbGb);
-$question_manager = new EupassqQuestionManager($dbGb, $grader);
+$question_manager = new EupassqQuestionManager($dbGb, $nc);
 
+
+
+function eupassqtemplate_clear_template_cache() {
+    $cache_key = 'page_templates-' . md5( get_theme_root() . '/' . get_stylesheet() );
+    wp_cache_delete( $cache_key, 'themes' );
+}
 
 add_action( 'admin_enqueue_scripts', [$admin_interface, 'eupassq_admin_enqueue_scripts']); 
 add_action( 'wp_enqueue_scripts', [$question_manager, 'Eupassq_EnqueueQuestionScripts']); 
+add_action( 'wp_enqueue_scripts', 'Eupassq_EnqueueSharedScripts');
+
+function Eupassq_EnqueueSharedScripts()
+{
+    wp_enqueue_script('shared_script',  plugin_dir_url(__FILE__) . 'assets/js/shared.js', array('jquery'), null, false );
+}
+
 
 
 

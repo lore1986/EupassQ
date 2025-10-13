@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
     const audioq = document.querySelectorAll("[data-euqtpe='audio']");
 
-    
     audioq.forEach(aq => {
         Attach_Audio_Event(aq)
     });
@@ -162,25 +161,19 @@ function Attach_Audio_Event(container)
     })
 }
 
-function SubmitMyQuiz() {
+async function SubmitMyQuiz() {
 
     const form = document.getElementById('eupassq_quiz_form');
+
+    //add form validation
+
+    ///
+
     if (!form) return;
 
-    console.log("hey called")
-
     const formData = new FormData(form); 
-
-
-    formData.set('action', 'eupass_qform_submit');         
-    formData.set('security', form.querySelector('input[name="security"]').value);
-
     const arrQue = document.querySelectorAll('.eupassq-question');
-    console.log(arrQue)
-
-    document.querySelectorAll('.eupassq-question').forEach(container => {
-
-        console.log(container)
+    arrQue.forEach(container => {
 
         if(container.getAttribute('data-euqtpe') == 'audio')
         {
@@ -198,7 +191,11 @@ function SubmitMyQuiz() {
         
     });
 
-    console.log(formData)
+    const formObj = {};
+    formData.forEach((v, k) => formObj[k] = v);
+
+    formData.append('action', 'eupass_qform_submit');
+    formData.append('eupassqnc', EupQ_Ajax_Obj.nonce.quiz_out);
 
     fetch(EupQ_Ajax_Obj.ajaxUrl, {
         method: 'POST',
@@ -207,38 +204,8 @@ function SubmitMyQuiz() {
     .then(response => response.json())
     .then(data => {
         const resultsContainer = document.getElementById('rq-response');
-        //console.log(data)
-        //const resultsContainer = $('#quiz-results-container');
-
-        const processedAnswers = data.data;
-
-        console.log(processedAnswers)
-        let resultsHtml = '<h2>Your Results:</h2>'; // Start with a title
-
-        // Check if there are any answers to display
-        if (processedAnswers.length > 0) {
-            // Loop through each answer object and build an HTML string
-            processedAnswers.forEach(function(item) {
-                // Use template literals (`) for easier HTML string creation
-                resultsHtml += `
-                    <div class="result-item">
-                        <p><strong>Question ID:</strong> ${item.question_id}</p>
-                        <p><strong>Your Answer:</strong> ${item.answer}</p>
-                    </div>
-                `;
-            });
-        } else {
-            resultsHtml += '<p>No answers were processed.</p>';
-        }
-
-        // Replace the content of the container with the newly generated HTML
-        resultsContainer.innerHTML = resultsHtml;
-
-       
-
-        // if (responseContainer) {
-        //     responseContainer.innerHTML = `<span style="color:green;">${data.data}</span>`;
-        // }
+        window.location.href = data.data.redirect;
+        return;
     })
     .catch(err => {
         const responseContainer = document.getElementById('rq-response');

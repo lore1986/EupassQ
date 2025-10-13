@@ -17,15 +17,72 @@ class EupassqAdminInterface
         add_action('add_meta_boxes_eupassq',[$this, 'eupassq_add_type_metabox'] );
         add_action( 'admin_notices', [$this,'eupassq_show_admin_notice'] );
         add_filter( 'wp_insert_post_data', [$this,'eupassq_validate_before_save'], 10, 2 );
+        add_action('admin_enqueue_scripts', 'TFIP_admin_enqueue_scripts');
+
+        add_action( 'wp_ajax_EurpasQ_render_admin_question', array($this, 'EurpasQ_render_admin_question'));
         
+        add_filter('manage_eupassq_posts_columns', array($this, 'EupassQ_add_content_column'));
+        add_action('manage_eupassq_posts_custom_column', array($this, 'EupassQ_fill_content_columns'), 10, 2);
+
     }
 
+
     /**
-     * Load admin css and js
+     * Load  css and js
      */
     function eupassq_admin_enqueue_scripts()
     {
+        
         wp_enqueue_style('eupassq_admin_css', plugin_dir_url(__DIR__) . 'assets/css/eupassqadmin.css');
+
+        // wp_enqueue_script(
+        //     'EupassQAdmin',
+        //     plugin_dir_url(__DIR__) . 'assets/js/admin.js',
+        //     [],
+        //     null,
+        //     true 
+        // );
+
+        //  wp_localize_script('EupassQAdmin', 'EupQ_Ajax_Obj', array(
+        //     'ajaxUrl' => admin_url('admin-ajax.php'),
+        //     'nonce' => wp_create_nonce('euq_pass_nonce')
+        // ));
+    }
+
+    
+    function EupassQ_add_content_column($columns) {
+        $new = [];
+
+        foreach ($columns as $key => $title) {
+            $new[$key] = $title; 
+
+           
+            if ($key === 'title') { // 'title' is the title column second one
+                $new['euqcontent'] = __('Eupass Question Content', 'textdomain');
+            }
+        }
+
+        return $new;
+    }
+
+    function EupassQ_fill_content_columns($column, $post_id) {
+        if ($column === 'euqcontent') {
+
+            $eupassQ = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);
+            echo esc_html($eupassQ->euqcontent ?: '—');
+        }
+    }
+
+    function EurpasQ_render_admin_question()
+    {
+        if(isset($_POST['id']))
+        {
+            $idpost = intval($_POST['id']);
+
+            $eupassQ = $this->dbGb->Eupassq_Find_Single_Question_PostId($idpost);
+            
+            wp_send_json_success($eupassQ->euqcontent);
+        }
     }
 
     /**
