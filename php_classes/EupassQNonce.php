@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class EupassQNonce {
 
     const QUIZ_SUBMIT = 'eupassq_quiz_submit';
+    const LIST_SUBMIT = 'eupassq_admin_quiz_list';
 
     /**
      * Create a nonce for a specific action

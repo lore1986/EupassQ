@@ -6,7 +6,7 @@ class EupassqDatabase {
 
     private $_wpdb;
     private $euqTable;
-    private $tablePrefix;
+    public $tablePrefix;
 
     public function __construct() {
         
@@ -22,7 +22,41 @@ class EupassqDatabase {
     public function Eupassq_return_Setting_value($key)
     {
         $table = $this->tablePrefix . 'eupass_set';
-        return $this->_wpdb->get_row($this->_wpdb->prepare("SELECT * FROM $table WHERE euq_key = %s", $key))->euq_val;
+        $row = $this->_wpdb->get_row($this->_wpdb->prepare("SELECT * FROM $table WHERE euq_key = %s", $key));
+
+        if($row != null)
+        {
+            return $row->euq_val;
+        }else
+        {
+            return null;
+        }
+    }
+
+    public function Eupassq_Check_Insert_Replace_Setting_value($key, $valin)
+    {
+        $table = $this->tablePrefix . 'eupass_set';
+
+        $count = $this->_wpdb->get_var(
+            $this->_wpdb->prepare("SELECT COUNT(*) FROM $table WHERE euq_key = %s", $key)
+        );
+
+        if ($count > 0) {
+            $deleted = $this->_wpdb->delete(
+                $table,
+                [ 'euq_key' => $key ],
+                [ '%s' ]
+            );
+        }
+
+        $data = [
+            'euq_key' => $key,
+            'euq_val' => $valin,
+        ];
+        $format = ['%s', '%s'];
+
+        $this->_wpdb->insert($table, $data, $format);
+
     }
 
     public function EupassQ_QuizId_randomizer()
@@ -153,7 +187,6 @@ class EupassqDatabase {
   
         
         $charset_collate = $this->_wpdb->get_charset_collate();
-        $new_install_sec = false;
         $eupassq_questions = $this->_wpdb->prefix . 'eupqs' ;
         $eupassq_tmp_quiz = $this->_wpdb->prefix . 'eupassq_tmp';
         $eupassq_sec = $this->_wpdb->prefix . 'eupass_set';
@@ -197,12 +230,10 @@ class EupassqDatabase {
 
             $sql_e = "CREATE TABLE $eupassq_sec (
                 euq_key VARCHAR(255) NOT NULL,
-                euq_val TEXT NOT NULL , 
+                euq_val MEDIUMTEXT NOT NULL , 
                 PRIMARY KEY (euq_key) 
             ) $charset_collate;";
 
-
-            $new_install_sec = true;
             array_push($sql, $sql_e);
         }
 
@@ -211,31 +242,6 @@ class EupassqDatabase {
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         foreach ($sql as $query) {
             dbDelta($query);
-        }
-
-        if($new_install_sec)
-        {
-            
-            $config = [
-                "private_key_bits" => 2048,
-                "private_key_type" => OPENSSL_KEYTYPE_RSA,
-            ];
-
-            $privateKeyString = '';
-
-            $private_key = openssl_pkey_new($config);
-            openssl_pkey_export($private_key, $privateKeyString);
-            $details = openssl_pkey_get_details($private_key);
-            $public_key = $details['key'];
-
-            $this->_wpdb->insert($eupassq_sec, [
-                'euq_key' => 'privkey',
-                'euq_val' => $privateKeyString
-            ]);
-            $this->_wpdb->insert($eupassq_sec, [
-                'euq_key' => 'pubkey',
-                'euq_val' => $public_key
-            ]);
         }
           
     }

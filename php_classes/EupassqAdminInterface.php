@@ -7,9 +7,11 @@ use stdClass;
 class EupassqAdminInterface
 {
     private $dbGb;
+    private $nc;
 
-    public function __construct($_dbGb) {
+    public function __construct($_dbGb, $_nc) {
         $this->dbGb = $_dbGb;
+        $this->nc = $_nc;
 
         add_action('init', [$this, 'eupassq_register_question_cpt']);
         add_action('admin_menu', [$this, 'eupassq_admin_menu']);
@@ -201,8 +203,64 @@ class EupassqAdminInterface
      */
     function eupassq_generate_menu()
     {
-        echo '<div class="wrap"><h1>Brave New World</h1></div>';
+        
+        
+
+        $table_name = $this->dbGb->tablePrefix . 'quiz_list';
+        $is_submit = false;
+
+        if (
+            $_SERVER['REQUEST_METHOD'] === 'POST' &&
+            isset($_POST['quiz_list_text']) 
+        ) {
+            $this->nc::die_if_invalid( $this->nc::LIST_SUBMIT, 'eupassqnc_list');
+            $is_submit = true;
+        }
+
+        if ($is_submit) {
+            
+            $quiz_content = trim(wp_kses_post($_POST['quiz_list_text']));
+            $quiz_content = str_replace(PHP_EOL, "", $quiz_content);
+            $q_arrr = explode(";", $quiz_content);
+            $clean_q_arr = [];
+            foreach ($q_arrr as $q) {
+                if(strlen($q) > 2)
+                {
+                    array_push($clean_q_arr, trim($q));
+                }
+            }
+            $cl_jq = json_encode($clean_q_arr);
+            
+            $this->dbGb->Eupassq_Check_Insert_Replace_Setting_value('bqlist', $cl_jq);
+
+            echo '<div class="notice notice-success is-dismissible"><p>✅ Quiz list saved successfully!</p></div>';
+        }
+
+        $quizzes = $this->dbGb->Eupassq_return_Setting_value('bqlist');
+        $list_q = '';
+
+        if($quizzes != null)
+        {
+            $qList = json_decode($quizzes);
+            foreach ($qList as $q) {
+                $list_q .= $q . ';' . PHP_EOL;
+            }
+        }
+
+        ?>
+        <div class="wrap">
+            <h1>EupassQ Dashboard</h1>
+            <form method="post">
+                <h2>List of Quiz</h2>
+                <?php $this->nc->field(EupassQNonce::LIST_SUBMIT, 'eupassqnc_list'); ?>
+                <textarea name="quiz_list_text" rows="10" style="width:100%; max-width:800px;"><?php echo esc_textarea($list_q); ?></textarea>
+                <br><br>
+                <input type="submit" class="button button-primary" value="Save List">
+            </form>
+        </div>
+        <?php
     }
+
 
 
     function eupassq_metabox_generate($post)
