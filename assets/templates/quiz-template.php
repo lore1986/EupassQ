@@ -2,6 +2,7 @@
 /**
  * Quiz Template
  */
+get_header();
 
 $uuid     = get_query_var('uuid');
 $quiz_html = $GLOBALS['eupassq_quiz_html'] ?? '';
@@ -11,59 +12,63 @@ $question_pool = $GLOBALS['question_pool'] ?? [];
 ?>
 
 <div class="wrap">
-    <h1>Take the Quiz</h1>
     <div class="EupassQ-style">
-        <form id="eupassq_quiz_form" class="EupassQ-form" >
-            <input value="<?php echo $user_info ?>" name="user_info" />
-            <input value="<?php echo $uuid ?>" name="qsm_unique_id" />
-            <?php foreach ($question_pool as $index => $question) : ?>
-                <div class="eupassq-question card mb-4 shadow-sm p-3" 
-                    data-index="<?php echo $index; ?>" 
-                    data-euqtpe="<?php echo $question['euqtpe']; ?>" 
-                    data-euid="<?php echo $question['euqid']; ?>">
-
-                    <div class="card-body">
-                        <label class="form-label fw-bold mb-2">
-                            <?php echo esc_html($question['euqcontent']); ?>
-                        </label>
-
-                        <?php if ($question['euqtpe'] == 'text') : ?>
-                            <textarea 
-                                name="eupassq_qansw[<?php echo $index; ?>]" 
-                                class="form-control EupassQ-input" 
-                                rows="3"
-                                placeholder="Type your answer here..."></textarea>
-
-                        <?php else : ?>
-                            <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
-                                <button type="button" class="btn btn-primary start-record">🎙 Start Recording</button>
-                                <button type="button" class="btn btn-danger stop-record" disabled>⏹ Stop Recording</button>
-                            </div>
-
-                            <div class="mt-3 reset-btn-div">
-                                <audio controls class="audio-playback w-100"></audio>
-                            </div>
-
-                            <input type="hidden" 
-                                name="eupassq_qansw[<?php echo $index; ?>]" 
-                                class="audio-data"/>
-                        <?php endif; ?>
-
-                        <input type="hidden" name="eupassq_qi[<?php echo $index; ?>]" value="<?php echo $question['euqid']; ?>"/>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-
-            <div class="text-center">
-                <button id="eupassq_quiz_form_submit" 
-                        onclick="SubmitMyQuiz()" 
-                        type="button" 
-                        class="btn btn-success EupassQ-submit">
-                        Submit Answers
-                </button>
+        <div class="container">
+            <div class="row">
+                <h1>Take the Quiz</h1>
             </div>
+            <form id="eupassq_quiz_form" class="EupassQ-form" >
+                <input value="<?php echo $user_info ?>" name="user_info" />
+                <input value="<?php echo $uuid ?>" name="qsm_unique_id" />
+                <?php foreach ($question_pool as $index => $question) : ?>
+                    <div class="eupassq-question card mb-4 shadow-sm p-3" 
+                        data-index="<?php echo $index; ?>" 
+                        data-euqtpe="<?php echo $question['euqtpe']; ?>" 
+                        data-euid="<?php echo $question['euqid']; ?>">
 
-            <div id="rq-response" class="mt-3 text-center"></div>
-        </form>
+                        <div class="card-body">
+                            <div class="EupassQ-style question-content mb-4">
+                                <?php echo wp_kses_post($question['euqcontent']); ?>
+                            </div>
+
+                            <?php if ($question['euqtpe'] == 'text') : ?>
+                                <textarea 
+                                    name="eupassq_qansw[<?php echo $index; ?>]" 
+                                    class="form-control EupassQ-input" 
+                                    rows="3"
+                                    placeholder="Type your answer here..."></textarea>
+
+                            <?php else : ?>
+                                <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+                                    <button type="button" class="btn btn-primary start-record">🎙 Start Recording</button>
+                                    <button type="button" class="btn btn-danger stop-record" disabled>⏹ Stop Recording</button>
+                                </div>
+
+                                <div class="mt-3 reset-btn-div">
+                                    <audio controls class="audio-playback w-100"></audio>
+                                </div>
+
+                                <input type="hidden" 
+                                    name="eupassq_qansw[<?php echo $index; ?>]" 
+                                    class="audio-data"/>
+                            <?php endif; ?>
+
+                            <input type="hidden" name="eupassq_qi[<?php echo $index; ?>]" value="<?php echo $question['euqid']; ?>"/>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+                <div class="text-center">
+                    <button id="btn btn-success" 
+                            onclick="SubmitMyQuiz()" 
+                            type="button" 
+                            class="btn btn-success EupassQ-submit">
+                            Submit Answers
+                    </button>
+                </div>
+
+                <div id="rq-response" class="mt-3 text-center"></div>
+            </form>
+        </div>
     </div>
 </div>

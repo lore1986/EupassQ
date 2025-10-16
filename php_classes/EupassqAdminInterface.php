@@ -56,10 +56,10 @@ class EupassqAdminInterface
         $new = [];
 
         foreach ($columns as $key => $title) {
-            $new[$key] = $title; 
+            $new[$key] = $title;
 
-           
-            if ($key === 'title') { // 'title' is the title column second one
+            if ($key === 'title') {
+                $new['euqlvl'] = __('Eupass Question Level', 'textdomain');
                 $new['euqcontent'] = __('Eupass Question Content', 'textdomain');
             }
         }
@@ -68,6 +68,13 @@ class EupassqAdminInterface
     }
 
     function EupassQ_fill_content_columns($column, $post_id) {
+
+        if ($column === 'euqlvl') {
+
+            $eupassQ = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);
+            echo esc_html($eupassQ->euqlvl ?: '—');
+        }
+
         if ($column === 'euqcontent') {
 
             $eupassQ = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);

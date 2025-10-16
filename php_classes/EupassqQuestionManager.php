@@ -22,6 +22,7 @@ class EupassqQuestionManager {
 
     public function Eupassq_EnqueueQuestionScripts()
     {
+        wp_enqueue_style('eupassq_bootstrap_css', plugin_dir_url(__DIR__) . 'assets/css/bootstrap.eupassq.css');
         wp_enqueue_style('eupassq_css', plugin_dir_url(__DIR__) . 'assets/css/eupassq.css');
         wp_enqueue_script('eq_qs_script',  plugin_dir_url(__DIR__) . 'assets/js/eq_qs_script.js', array('jquery'), null, false );
 
