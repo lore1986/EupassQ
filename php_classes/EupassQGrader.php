@@ -8,7 +8,6 @@ use OpenAI;
 
 class EupassQGrader 
 {
-    private $openaikey = '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';
     private $client;
 
     public function __construct() {
@@ -77,7 +76,6 @@ class EupassQGrader
 
         $rubricAudio = "Sei un insegnante di italiano. Valuta la trascrizione di questo audio registrato da uno studente di livello 
         $level. Valuta in modo coerente con gli standard di certificazione linguistica ufficiale.
-        Valuta considerando che questo testo è la trascrizione di un messaggio vocale.
         - Efficacia comunicativa: 0–4
         - Correttezza morfosintattica: 0–3
         - Adeguatezza e ricchezza lessicale: 0–2
@@ -85,20 +83,15 @@ class EupassQGrader
         Punteggio massimo: 10 punti.";
 
         try {
-            // 1. Download the audio temporarily
+
             $tempFile = tempnam(sys_get_temp_dir(), 'audio_') . '.webm';
             file_put_contents($tempFile, file_get_contents($audioUrl));
 
-            // 2. Transcribe the audio
-            // $transcription = $this->client->audio()->transcriptions()->create([
-            //     'file' => fopen($tempFile, 'r'),
-            //     'model' => 'gpt-4o-mini-transcribe', // or 'whisper-1'
-            // ]);
             $audioText = '';
             if ($tempFile && file_exists($tempFile)) {
                 try {
                     $transcription = $this->client->audio()->transcribe([
-                        'model' => 'whisper-1', // or gpt-4o-transcribe if supported
+                        'model' => 'whisper-1', 
                         'file'  => fopen($tempFile, 'r'),
                         'response_format' => 'verbose_json',
                     ]);
@@ -109,10 +102,6 @@ class EupassQGrader
                 }
             }
             
-
-            // $audioText = $transcription->text;
-
-            // 3. Grade the transcription
             if ($audioText) {
                 $audioGrade = $this->client->chat()->create([
                     'model' => 'gpt-4.1',
@@ -150,7 +139,6 @@ class EupassQGrader
                 $audioResult = json_decode($audioGrade->choices[0]->message->content, true);
             }
 
-            // 4. Clean up temporary file
             unlink($tempFile);
 
         } catch (\Throwable $e) {

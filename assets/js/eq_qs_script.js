@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
     const audioq = document.querySelectorAll("[data-euqtpe='audio']");
 
+    console.log(EupQ_Ajax_Obj)
+   
     audioq.forEach(aq => {
         Attach_Audio_Event(aq)
     });
@@ -195,6 +197,7 @@ async function SubmitMyQuiz() {
     formData.forEach((v, k) => formObj[k] = v);
 
     formData.append('action', 'eupass_qform_submit');
+     console.log(EupQ_Ajax_Obj)
     formData.append('eupassqnc', EupQ_Ajax_Obj.nonce.quiz_out);
 
     fetch(EupQ_Ajax_Obj.ajaxUrl, {

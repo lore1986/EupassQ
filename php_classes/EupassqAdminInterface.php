@@ -19,7 +19,7 @@ class EupassqAdminInterface
         add_action('add_meta_boxes_eupassq',[$this, 'eupassq_add_type_metabox'] );
         add_action( 'admin_notices', [$this,'eupassq_show_admin_notice'] );
         add_filter( 'wp_insert_post_data', [$this,'eupassq_validate_before_save'], 10, 2 );
-        add_action('admin_enqueue_scripts', 'TFIP_admin_enqueue_scripts');
+        add_action('admin_enqueue_scripts', [$this,'eupassq_admin_enqueue_scripts']);
 
         add_action( 'wp_ajax_EurpasQ_render_admin_question', array($this, 'EurpasQ_render_admin_question'));
         
@@ -203,10 +203,6 @@ class EupassqAdminInterface
      */
     function eupassq_generate_menu()
     {
-        
-        
-
-        $table_name = $this->dbGb->tablePrefix . 'quiz_list';
         $is_submit = false;
 
         if (
@@ -222,11 +218,14 @@ class EupassqAdminInterface
             $quiz_content = trim(wp_kses_post($_POST['quiz_list_text']));
             $quiz_content = str_replace(PHP_EOL, "", $quiz_content);
             $q_arrr = explode(";", $quiz_content);
+            
             $clean_q_arr = [];
             foreach ($q_arrr as $q) {
-                if(strlen($q) > 2)
+                if(strlen($q) > 3)
                 {
-                    array_push($clean_q_arr, trim($q));
+                    $q = trim($q);
+                    $arr_lvl = explode('-', $q);
+                    array_push($clean_q_arr, $arr_lvl);
                 }
             }
             $cl_jq = json_encode($clean_q_arr);
@@ -243,7 +242,8 @@ class EupassqAdminInterface
         {
             $qList = json_decode($quizzes);
             foreach ($qList as $q) {
-                $list_q .= $q . ';' . PHP_EOL;
+
+                $list_q .= $q[0] . '-'. $q[1] . '-'. $q[2] . '-'. $q[3] . ';' . PHP_EOL;
             }
         }
 

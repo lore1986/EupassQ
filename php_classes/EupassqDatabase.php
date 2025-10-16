@@ -19,6 +19,42 @@ class EupassqDatabase {
         add_action('init', [$this, 'Eupassq_Create_Tables']);
     }
 
+    public function EupassQ_Set_Quiz_Settings($uuid)
+    {
+        $results_row = $this->EupassQ_Query_QSM_Results($uuid);
+        $quiz_name = $results_row->quiz_name;
+        $arr_question_settings = json_decode($this->Eupassq_return_Setting_value('bqlist'));
+        $quiz_setting = [
+            'exist' => 0,
+            'level' => null,
+            'textqs'=> null,
+            'audioqs' => null,
+            'qsm_id' => $uuid,
+            'user_info' => $results_row->email
+        ];
+
+        foreach ($arr_question_settings as $set) {
+            
+            if($set[0] == $quiz_name)
+            {
+                $quiz_setting['exist'] = 1;
+                $quiz_setting['textqs'] = $set[2];
+                $quiz_setting['level'] = $set[1];
+                $quiz_setting['audioqs'] = $set[3];
+
+                break;
+            }
+        }
+
+        return $quiz_setting;
+    }
+
+    public function EupassQ_Query_QSM_Results($uuid)
+    {
+        $table = $this->tablePrefix . 'mlw_results';
+        return $this->_wpdb->get_row($this->_wpdb->prepare("SELECT * FROM $table WHERE unique_id = %s", $uuid));
+    }
+
     public function Eupassq_return_Setting_value($key)
     {
         $table = $this->tablePrefix . 'eupass_set';

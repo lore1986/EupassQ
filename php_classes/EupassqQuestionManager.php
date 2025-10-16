@@ -12,10 +12,12 @@ class EupassqQuestionManager {
         $this->dbGb = $_dbGb;
         $this->nc = $_nc;
 
-        add_shortcode( 'eupassq_quiz', [$this, 'EupassqQuestion_Generate_Quiz_Form'] );
+        // add_shortcode( 'eupassq_quiz', [$this, 'EupassqQuestion_Generate_Quiz_Form'] );
+        
         add_action('wp_ajax_eupass_qform_submit', [$this, 'Eupassq_handle_form_submission']);
         add_action('wp_ajax_nopriv_eupass_qform_submit', [$this, 'Eupassq_handle_form_submission']);
     }
+
 
 
     public function Eupassq_EnqueueQuestionScripts()
@@ -26,6 +28,7 @@ class EupassqQuestionManager {
        
         wp_localize_script('eq_qs_script', 'EupQ_Ajax_Obj', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
+            'templatesUrl'  => plugin_dir_url(__DIR__)  . 'assets/templates/html/',
             'nonce' => [
                 'quiz_out' => $this->nc::create($this->nc::QUIZ_SUBMIT) 
             ]
@@ -64,21 +67,15 @@ class EupassqQuestionManager {
         $textqs_n = isset($atts['textqs']) ? intval($atts['textqs']) : 3; 
         $audioqs_n = isset($atts['audioqs']) ? intval($atts['audioqs']) : 3;
 
-        //pick all questions available for the specified level
-        //create two array based on type (two big arrays)
-        //select textqs/audioqs number of random question from each array
-        //keep trace of the selected indexes 
-        //serve quiz
-
+        $qsm_unique_id = isset($atts['qsm_id']) ? sanitize_text_field($atts['qsm_id']) : null;
+        $user_info = isset($atts['user_info']) ? sanitize_text_field($atts['user_info']) : null;
         $question_pool = $this->dbGb->Eupassq_Get_All_Questions_Of_Level($levelin);
 
+        $arr_val = ['user_info' => $user_info, 'qsm_unique_id' => $qsm_unique_id, 'question_pool' => null];
 
-        //fix this
         if($question_pool == null)
         {
-            ob_start();
-            ?> <h3>No questions available</h3> <?php
-            return ob_get_clean();
+            return $arr_val;
         }
 
         $audio_pool = [];
@@ -96,64 +93,9 @@ class EupassqQuestionManager {
         $question_pool = array_merge($audio_pool, $text_pool);
         shuffle($question_pool);
 
-         ob_start();
-        ?>
-        <div class="EupassQ-style">
-            <form id="eupassq_quiz_form" class="EupassQ-form" >
-                <?php foreach ($question_pool as $index => $question) : ?>
-                    <div class="eupassq-question card mb-4 shadow-sm p-3" 
-                        data-index="<?php echo $index; ?>" 
-                        data-euqtpe="<?php echo $question['euqtpe']; ?>" 
-                        data-euid="<?php echo $question['euqid']; ?>">
+        $arr_val = ['user_info' => $user_info, 'qsm_unique_id' => $qsm_unique_id, 'question_pool' => $question_pool];
 
-                        <div class="card-body">
-                            <label class="form-label fw-bold mb-2">
-                                <?php echo esc_html($question['euqcontent']); ?>
-                            </label>
-
-                            <?php if ($question['euqtpe'] == 'text') : ?>
-                                <textarea 
-                                    name="eupassq_qansw[<?php echo $index; ?>]" 
-                                    class="form-control EupassQ-input" 
-                                    rows="3"
-                                    placeholder="Type your answer here..."></textarea>
-
-                            <?php else : ?>
-                                <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
-                                    <button type="button" class="btn btn-primary start-record">🎙 Start Recording</button>
-                                    <button type="button" class="btn btn-danger stop-record" disabled>⏹ Stop Recording</button>
-                                </div>
-
-                                <div class="mt-3 reset-btn-div">
-                                    <audio controls class="audio-playback w-100"></audio>
-                                </div>
-
-                                <input type="hidden" 
-                                    name="eupassq_qansw[<?php echo $index; ?>]" 
-                                    class="audio-data"/>
-                            <?php endif; ?>
-
-                            <input type="hidden" name="eupassq_qi[<?php echo $index; ?>]" value="<?php echo $question['euqid']; ?>"/>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-
-                <div class="text-center">
-                    <button id="eupassq_quiz_form_submit" 
-                            onclick="SubmitMyQuiz()" 
-                            type="button" 
-                            class="btn btn-success EupassQ-submit">
-                            Submit Answers
-                    </button>
-                </div>
-
-                <div id="rq-response" class="mt-3 text-center"></div>
-            </form>
-            </div>
-
-        <?php
-
-        return ob_get_clean();
+        return $arr_val;
         
     }
 
