@@ -23,8 +23,8 @@ class EupassQTemplate
     public function EupassQ_register_rewrite_rule()
     {
         add_rewrite_rule(
-            '^results/([a-z0-9]+)/?$',
-            'index.php?results_id=$matches[1]',
+            '^results/([a-z0-9]+)/([a-z0-9-]+)?$',
+            'index.php?results_id=$matches[1]&qsmres=$matches[2]',
             'top'
         );
 
@@ -42,7 +42,9 @@ class EupassQTemplate
     public function EupassQ_register_query_var($vars)
     {
         $vars[] = 'results_id';
+        $vars[] = 'qsmres';
         $vars[] = 'uuid';
+
         return $vars;
     }
 
@@ -52,9 +54,9 @@ class EupassQTemplate
     public function EupassQ_load_results_template()
     {
         $results_id = get_query_var('results_id');
-        
+        $qsm_id = get_query_var('qsmres');
 
-        if (empty($results_id)) {
+        if (empty($results_id) || empty($qsm_id)) {
             return;
         }
 

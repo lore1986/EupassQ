@@ -23,14 +23,14 @@ include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassqQuestionMana
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassQNonce.php');
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassQTemplater.php');
 include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassQBridgeQSM.php');
-
+include_once(plugin_dir_path(__DIR__) . 'eupassq/php_classes/EupassQGrader.php');
 
 register_activation_hook( __FILE__, 'eupassqtemplate_clear_template_cache' );
 register_deactivation_hook( __FILE__, 'eupassqtemplate_clear_template_cache');
 
 use EupassQ\PhpClasses\EupassqAdminInterface;
 use EupassQ\PhpClasses\EupassqDatabase;
-use EupassQ\PhpClasses\EupassQ_Nonce;
+use EupassQ\PhpClasses\EupassQGrader;
 use EupassQ\PhpClasses\EupassQNonce;
 use EupassQ\PhpClasses\EupassqQuestionManager;
 use EupassQ\PhpClasses\EupassQTemplate;
@@ -43,7 +43,7 @@ $nc = new EupassQNonce();
 $question_manager = new EupassqQuestionManager($dbGb, $nc);
 $templater = new EupassQTemplate($dbGb, $question_manager);
 $admin_interface = new EupassqAdminInterface($dbGb, $nc);
-
+$grader = new EupassQGrader();
 $bridge = new EupassQBridgeQSM($dbGb);
 
 

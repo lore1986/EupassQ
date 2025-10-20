@@ -1,5 +1,9 @@
 (function (send) {
   XMLHttpRequest.prototype.send = function (data) {
+
+    console.log(
+      'called injection'
+    )
     try {
       if (data instanceof FormData && data.get('action') === 'qmn_process_quiz') {
         const uidd = data.get('qsm_unique_key');
@@ -22,7 +26,7 @@
 
 function hideTill(hide = true) {
   const container = document.querySelector(
-    '.qsm-quiz-container.qsm-quiz-container-2.qmn_quiz_container.mlw_qmn_quiz.quiz_theme_default.qsm-recently-active'
+    '.qsm-quiz-container'
   );
 
   if (!container) return;
@@ -68,12 +72,13 @@ async function ajaxCall(uuiid) {
 
     const resText = await response.text();
     const res = JSON.parse(resText);
-    console.log('ajaxCall response:', res);
+    console.log('ajaxCall response:');
+    console.log(res)
 
     if (res?.data?.exist) {
 
       const uniqueQSMId = res.data.uidq;
-      const urlR = '/europassQ/' + uniqueQSMId;
+      const urlR = res.data.link;
 
       const templateUrl = EupQ_Ajax_Obj.templatesUrl + 'starteupassq.html';
     
@@ -86,11 +91,13 @@ async function ajaxCall(uuiid) {
           urlR  : urlR
         })
 
-        const container = document.querySelector(
-          '.qsm-quiz-container.qsm-quiz-container-2.qmn_quiz_container.mlw_qmn_quiz.quiz_theme_default.qsm-recently-active'
-        );
-
+        // const container = document.querySelector(
+        //   '.qsm-quiz-container'
+        // );
+        const container = document.getElementById('main');
+        console.log(container)
         if (container) {
+          console.log('container found:');
           container.innerHTML = rendered_underscore;
         }
 

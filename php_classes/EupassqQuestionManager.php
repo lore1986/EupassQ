@@ -132,7 +132,13 @@ class EupassqQuestionManager {
         // Security check
         $this->nc::die_if_invalid( $this->nc::QUIZ_SUBMIT, 'eupassqnc');
 
-        
+
+        $unique_qsm_id = isset($_POST['qsm_unique_id']) ? sanitize_text_field($_POST['qsm_unique_id']) : null;
+
+        if($unique_qsm_id == null)
+        {
+            return;
+        }
 
         $questions = isset($_POST['eupassq_qi']) ? (array) $_POST['eupassq_qi'] : [];
         $answers   = isset($_POST['eupassq_qansw'])   ? (array) $_POST['eupassq_qansw']   : [];
@@ -200,7 +206,7 @@ class EupassqQuestionManager {
         $code = $this->dbGb->Eupassq_Insert_Quiz_Entry($processed);
             
 
-        $pretty_url = home_url('/results/' . $code);
+        $pretty_url = home_url('/results/' . $code . '/' . $unique_qsm_id);
 
         $res_obj = [
             'redirect' => $pretty_url

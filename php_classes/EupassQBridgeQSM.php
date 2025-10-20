@@ -27,13 +27,13 @@ class EupassQBridgeQSM {
 
         $response = [
             'exist' => $quiz_setting['exist'], 
-            'uidq' => $quiz_unique_id
+            'uidq' => $quiz_unique_id,
+            'link' => $quiz_setting['link']
         ];
 
         wp_send_json_success($response);
     }
 
-    
 
 
 }

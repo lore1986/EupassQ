@@ -14,9 +14,6 @@ $question_pool = $GLOBALS['question_pool'] ?? [];
 <div class="wrap">
     <div class="EupassQ-style">
         <div class="container">
-            <div class="row">
-                <h1>Take the Quiz</h1>
-            </div>
             <form id="eupassq_quiz_form" class="EupassQ-form" >
                 <input value="<?php echo $user_info ?>" name="user_info" />
                 <input value="<?php echo $uuid ?>" name="qsm_unique_id" />

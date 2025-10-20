@@ -19,6 +19,34 @@ class EupassqDatabase {
         add_action('init', [$this, 'Eupassq_Create_Tables']);
     }
 
+    public function EupassQ_Query_QSM_Question_Answer($results_row)
+    {
+        $arr_ans_ret = [];
+        $quiz_results_data = unserialize($results_row->quiz_results);
+        $questions = $quiz_results_data[1];
+
+        for ($i=0; $i < count($questions) - 1; $i++) {  //-1 because last question is not a question but accept user agreement
+            
+            $arr_s = [
+                'question_text' => $questions[$i][0],
+                'question_answer' => implode(', ', $questions[$i]['user_answer']),
+                'iscorrect' => $questions[$i]['correct'] 
+            ];
+
+            array_push($arr_ans_ret, $arr_s);
+        }
+
+        return $arr_ans_ret;
+    }
+
+    public function EupassQ_Get_User_EupassQ_Answers ($result_code)
+    {
+        $eupassq_tmp_quiz = $this->_wpdb->prefix . 'eupassq_tmp';
+
+        return $this->_wpdb->get_results($this->_wpdb->prepare("SELECT * FROM $eupassq_tmp_quiz 
+            WHERE euqtid = %s", esc_html($result_code)), ARRAY_A);
+    }
+
     public function EupassQ_Set_Quiz_Settings($uuid)
     {
         $results_row = $this->EupassQ_Query_QSM_Results($uuid);
@@ -26,6 +54,7 @@ class EupassqDatabase {
         $arr_question_settings = json_decode($this->Eupassq_return_Setting_value('bqlist'));
         $quiz_setting = [
             'exist' => 0,
+            'link' => home_url('/europassQ/' . $uuid),
             'level' => null,
             'textqs'=> null,
             'audioqs' => null,
@@ -116,6 +145,7 @@ class EupassqDatabase {
             WHERE euqlvl = %s", $euqlvl), ARRAY_A);
 
     }
+
 
     public function Eupassq_Find_Single_Question_PostId($postid)
     {
