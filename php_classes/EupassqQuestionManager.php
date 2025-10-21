@@ -154,8 +154,7 @@ class EupassqQuestionManager {
 
             $entry = [
                 'question_id' => $qid,
-                'answer' => null,
-                'uid' => 3
+                'answer' => null
             ];
 
             switch ($squ->euqtpe) {

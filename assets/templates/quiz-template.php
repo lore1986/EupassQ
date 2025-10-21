@@ -13,10 +13,13 @@ $question_pool = $GLOBALS['question_pool'] ?? [];
 
 <div class="wrap">
     <div class="EupassQ-style">
-        <div class="container">
+        <div class="container mt-4">
+            <div class="row text-center m-2">
+                <h2>Text and Audio Production Test</h2> 
+            </div>
             <form id="eupassq_quiz_form" class="EupassQ-form" >
-                <input value="<?php echo $user_info ?>" name="user_info" />
-                <input value="<?php echo $uuid ?>" name="qsm_unique_id" />
+                <input hidden value="<?php echo $user_info ?>" name="user_info" />
+                <input hidden value="<?php echo $uuid ?>" name="qsm_unique_id" />
                 <?php foreach ($question_pool as $index => $question) : ?>
                     <div class="eupassq-question card mb-4 shadow-sm p-3" 
                         data-index="<?php echo $index; ?>" 
@@ -25,7 +28,7 @@ $question_pool = $GLOBALS['question_pool'] ?? [];
 
                         <div class="card-body">
                             <div class="EupassQ-style question-content mb-4">
-                                <?php echo wp_kses_post($question['euqcontent']); ?>
+                                <?php echo apply_filters('the_content', stripslashes($question['euqcontent'])); ?>
                             </div>
 
                             <?php if ($question['euqtpe'] == 'text') : ?>
@@ -40,10 +43,16 @@ $question_pool = $GLOBALS['question_pool'] ?? [];
                                     <button type="button" class="btn btn-primary start-record">🎙 Start Recording</button>
                                     <button type="button" class="btn btn-danger stop-record" disabled>⏹ Stop Recording</button>
                                 </div>
+                                
+                                <div id="error_<?php echo $question['euqid']; ?>" hidden class="recording-message text-danger small mt-2" style="min-height:1.2em;">Hello error</div>
 
                                 <div class="mt-3 reset-btn-div">
-                                    <audio controls class="audio-playback w-100"></audio>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <audio controls class="audio-playback flex-grow-1"></audio>
+                                        <span class="audio-status text-success fs-4" hidden>✔</span>
+                                    </div>
                                 </div>
+
 
                                 <input type="hidden" 
                                     name="eupassq_qansw[<?php echo $index; ?>]" 

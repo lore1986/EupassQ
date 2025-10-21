@@ -154,27 +154,11 @@ class EupassQGrader
 
     function EupassQ_Handle_Submissions($result_code, $qsmId) {
       
-        // $totalGradesText = [
-        //     'efficacia_comunicativa' => 0,
-        //     'correttezza_morfosintattica' => 0,
-        //     'lessico' => 0,
-        //     'ortografia' => 0,
-        //     'punteggio_totale' => 0,
-        //     'feedback' => [],
-        // ];
-
-        // $totalGradesAudio = [
-        //     'efficacia_comunicativa' => 0,
-        //     'correttezza_morfosintattica' => 0,
-        //     'lessico' => 0,
-        //     'pronuncia_intonazione' => 0,
-        //     'punteggio_totale' => 0,
-        //     'feedback' => [],
-        // ];
 
        $answers = $this->dbGb->EupassQ_Get_User_EupassQ_Answers($result_code);
         
         $res_array = [
+            
             'qsm' => [
                 'total' => 0,
                 'partial' => 0,
@@ -197,56 +181,73 @@ class EupassQGrader
         foreach ($answers as $answer) {
             
             //answer could be empty in that case count as not answered ==> 0 point no feedback
-
+            
             $question = $this->dbGb->Eupassq_Get_Single_Question( intval($answer['eupqid']));
 
             $single_q = [];
             $single_q['type'] = $question->euqtpe;
             $single_q['question_text'] = stripslashes(wp_kses_post($question->euqcontent));
             $single_q['question_id']   = $answer['eupqid'];
-
-            if($question->euqtpe == 'text')
+            
+            if($answer["euqanswer"] == "" || $answer["euqanswer"] == null || strlen($answer["euqanswer"]) < 2)
             {
-                $textResult = $this->EupassQ_Evaluate_Written_Production($answer, $question->euqlvl);
-                $single_q['efficacia_comunicativa'] = $textResult['efficacia_comunicativa'];
-                $single_q['correttezza_morfosintattica'] = $textResult['correttezza_morfosintattica'];
-                $single_q['lessico'] = $textResult['lessico'];
-                $single_q['ortografia'] = $textResult['ortografia'];
-                $single_q['punteggio_totale'] = $textResult['punteggio_totale'];
-                $single_q['feedback'] = $textResult['feedback'];
+                $single_q['efficacia_comunicativa'] = 0;
+                $single_q['correttezza_morfosintattica'] = 0;
+                $single_q['lessico'] = 0;
+                $single_q['punteggio_totale'] = 0;
+                $single_q['feedback'] = "No answer was provided for the question";
+                
+                if($question->euqtpe == 'text')
+                {
+                    $single_q['ortografia'] = 0;
+                    array_push($res_array['eupassQ_text']['qanda'], $single_q);
+                    $res_array['eupassQ_text']['partial'] += 0;
+                    $res_array['eupassQ_text']['total'] += 1;
+                }
+                else
+                {
+                    $single_q['pronuncia_intonazione'] = 0;
+                    array_push($res_array['eupassQ_audio']['qanda'], $single_q);
+                    $res_array['eupassQ_audio']['partial'] += 0;
+                    $res_array['eupassQ_audio']['total'] += 1;
+                }
 
-
-                $res_array['eupassQ_text']['qanda'] = $single_q;
-                $res_array['eupassQ_text']['partial'] += $textResult['punteggio_totale'];
-                $res_array['eupassQ_text']['total'] += 1;
-                // $totalGradesText['efficacia_comunicativa'] += $textResult['efficacia_comunicativa'];
-                // $totalGradesText['correttezza_morfosintattica'] += $textResult['correttezza_morfosintattica'];
-                // $totalGradesText['lessico'] += $textResult['lessico'];
-                // $totalGradesText['ortografia'] += $textResult['ortografia'];
-                // $totalGradesText['punteggio_totale'] += $textResult['punteggio_totale'];
-
-                // $totalGradesText['feedback'][] = $textResult['feedback'];
             }else
             {
-                $audioResult = $this->EupassQ_Evaluate_Audio_Production($answer, $question->euqlvl);
+                if($question->euqtpe == 'text')
+                {
+                    
+                    $textResult = $this->EupassQ_Evaluate_Written_Production($answer, $question->euqlvl);
+                    $single_q['efficacia_comunicativa'] = $textResult['efficacia_comunicativa'];
+                    $single_q['correttezza_morfosintattica'] = $textResult['correttezza_morfosintattica'];
+                    $single_q['lessico'] = $textResult['lessico'];
+                    $single_q['ortografia'] = $textResult['ortografia'];
+                    $single_q['punteggio_totale'] = $textResult['punteggio_totale'];
+                    $single_q['feedback'] = stripslashes($textResult['feedback']);
 
-                $single_q['efficacia_comunicativa'] = $audioResult['efficacia_comunicativa'];
-                $single_q['correttezza_morfosintattica'] = $audioResult['correttezza_morfosintattica'];
-                $single_q['lessico'] = $audioResult['lessico'];
-                $single_q['pronuncia_intonazione'] = $audioResult['punteggio_totale'];
-                $single_q['feedback'] = $audioResult['feedback'];
+                    array_push($res_array['eupassQ_text']['qanda'], $single_q);
+                    //$res_array['eupassQ_text']['qanda'] = $single_q;
+                    $res_array['eupassQ_text']['partial'] += $textResult['punteggio_totale'];
+                    $res_array['eupassQ_text']['total'] += 1;
 
+                }else
+                {
+        
+                    $audioResult = $this->EupassQ_Evaluate_Audio_Production($answer, $question->euqlvl);
 
-                $res_array['eupassQ_audio']['qanda'] = $single_q;
-                $res_array['eupassQ_audio']['partial'] += $audioResult['punteggio_totale'];
-                $res_array['eupassQ_audio']['total'] += 1;
-                // $totalGradesAudio['efficacia_comunicativa'] += $audioResult['efficacia_comunicativa'];
-                // $totalGradesAudio['correttezza_morfosintattica'] += $audioResult['correttezza_morfosintattica'];
-                // $totalGradesAudio['lessico'] += $audioResult['lessico'];
-                // $totalGradesAudio['pronuncia_intonazione'] += $audioResult['pronuncia_intonazione'];
-                // $totalGradesAudio['punteggio_totale'] += $audioResult['punteggio_totale'];
+                    $single_q['efficacia_comunicativa'] = $audioResult['efficacia_comunicativa'];
+                    $single_q['correttezza_morfosintattica'] = $audioResult['correttezza_morfosintattica'];
+                    $single_q['lessico'] = $audioResult['lessico'];
+                    $single_q['pronuncia_intonazione'] = $audioResult['pronuncia_intonazione'];
+                    $single_q['feedback'] = stripslashes($audioResult['feedback']);
 
-                // $totalGradesAudio['feedback'][] = $audioResult['feedback'];
+                    array_push($res_array['eupassQ_audio']['qanda'], $single_q);
+                    //$res_array['eupassQ_audio']['qanda'] = $single_q;
+                    $res_array['eupassQ_audio']['partial'] += $audioResult['punteggio_totale'];
+                    $res_array['eupassQ_audio']['total'] += 1;
+
+                }
+            
             }
 
 
@@ -256,12 +257,8 @@ class EupassQGrader
         $results_row = $this->dbGb->EupassQ_Query_QSM_Results($qsmId);
 
         $res_array['qsm']['total'] = intval($results_row->total) - 1;
-        $res_array['qsm']['partial'] = intval($results_row->correct);
+        $res_array['qsm']['partial'] = intval($results_row->correct); //check
         $res_array['qsm']['qanda'] = $this->dbGb->EupassQ_Query_QSM_Question_Answer($results_row);
-       
-            // 'max_total' => 0,
-            // 'user_score' =>
-    
 
         $total_score_qsm = ($res_array['qsm']['partial'] * 10) / $res_array['qsm']['total'];
         $total_score_text = $res_array['eupassQ_text']['partial'] / $res_array['eupassQ_text']['total'];
@@ -271,38 +268,7 @@ class EupassQGrader
         $res_array['user_score'] = round($tot, 2);
         $res_array['user_percentage'] = round(($tot / 30),2) * 100;
         
-        
-
-        
-
-        // $combinedGradeText = [
-        //     'efficacia_comunicativa' => $totalGradesText['efficacia_comunicativa']/2,
-        //     'correttezza_morfosintattica' => $totalGradesText['correttezza_morfosintattica']/2,
-        //     'lessico' => $totalGradesText['lessico']/2,
-        //     'ortografia' => $totalGradesText['ortografia']/2,
-        //     'punteggio_totale' => $totalGradesText['punteggio_totale']/2 ,
-        //     'feedback' => implode("\n---\n", $totalGradesText['feedback']), 
-        // ];
-        // $combinedGradeText['punteggio_totale'] = min(10, $combinedGradeText['punteggio_totale']);
-
-        // $combinedGradeAudio = [
-        //     'efficacia_comunicativa' => $totalGradesAudio['efficacia_comunicativa'] /2,
-        //     'correttezza_morfosintattica' => $totalGradesAudio['correttezza_morfosintattica']/2,
-        //     'lessico' => $totalGradesAudio['lessico']/2,
-        //     'pronuncia_intonazione' => $totalGradesAudio['pronuncia_intonazione']/2,
-        //     'punteggio_totale' => $totalGradesAudio['punteggio_totale']/2 ,
-        //     'feedback' => implode("\n---\n", $totalGradesAudio['feedback']), // combine feedback
-        // ];
-        // $combinedGradeAudio['punteggio_totale'] = min(10, $combinedGradeAudio['punteggio_totale']);
-
-
-        
-
-        // $obj = [
-        //     'textresults' => $combinedGradeText,
-        //     'audioresults' => $combinedGradeAudio
-        //     // 'feedback' => $combinedGrade['feedback'] 
-        // ];
+    
 
         return $res_array;
         

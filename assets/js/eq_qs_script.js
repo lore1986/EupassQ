@@ -7,22 +7,51 @@ document.addEventListener('DOMContentLoaded', function(){
 
     const audioq = document.querySelectorAll("[data-euqtpe='audio']");
 
-    console.log(EupQ_Ajax_Obj)
+    //console.log(EupQ_Ajax_Obj)
    
     audioq.forEach(aq => {
         Attach_Audio_Event(aq)
     });
 
+    setInterval(EupassQ_scan_for_audio, 500);
+
 })
+
+
+function EupassQ_scan_for_audio() {
+
+   const audioPl = document.querySelectorAll('.audio-playback');
+   
+   if(audioPl.length >= 1)
+   {
+        audioPl.forEach(element => {
+            
+            const srcAtt = element.getAttribute('src');
+            const parentN = element.parentNode;
+            const audioCheck = parentN.querySelector('.audio-status');
+            
+            if(srcAtt != null)
+            {   
+                audioCheck.hidden = false;
+            }else
+            {
+                audioCheck.hidden = true;
+            }
+
+        });
+   }
+}
+
+// Run `myFunction` every 1000 milliseconds (1 second)
 
 function On_Error_Recording(ev)
 {
-    ////console.log(ev)
+    //////console.log(ev)
 }
 
 function On_Start_Recording(ev)
 {
-    ////console.log(ev)
+    //////console.log(ev)
 }
 
 async function On_Stop_Recording(ev, timerec, chunks, arrB)
@@ -30,57 +59,63 @@ async function On_Stop_Recording(ev, timerec, chunks, arrB)
     activeMediaStreamRecorder = null;
 
     clearTimeout(timerec); 
-    
-    
-    const audioBlob = new Blob(chunks, { type: 'audio/webm' }); 
-    const improvedBlob = null;//await improve_audio_with_noise_reduction(audioBlob);
-    const audioURL = URL.createObjectURL(audioBlob);
-
-    // isVoiceTooLow(improvedBlob, -22).then(tooLow => {
-    //     if (tooLow) {
-    //         //console.log("Voice is TOO LOW");
-    //     } else {
-    //         //console.log("Voice level is OK");
-    //     }
-
-    //     //console.log("tooLow =", tooLow);
-    // });
-
     const cont = arrB[0];
-
 
     let ind = cont.getAttribute('data-index');
     let idd = cont.getAttribute('data-euid');
 
-
-    //check 
-    const blobObj = {
-        index : ind,
-        idq : idd,
-        uid: 3, //fix this with actual userid
-        blob: audioBlob,
-        url: audioURL
-    }
-
-    const objB = new Object(blobObj);
     
-    arrayBlobs.push(objB);
-
-    const audioPlayback = cont.querySelector('.audio-playback');
-
-    if (audioPlayback) {
+    const audioBlob = new Blob(chunks, { type: 'audio/webm' }); 
+    const audioURL = URL.createObjectURL(audioBlob);
+    var low = false;
+    //console.log(low)
+    
+    isVoiceTooLow(audioBlob, -22).then(tooLow => {
         
-        if(audioPlayback.getAttribute('src') == null)
+        if (tooLow) {
+            low = true;
+            //console.log(low)
+            const errM = document.getElementById('error_' + idd);
+            errM.innerText = "Please speak louder. Volume of your recording is too low therefore the recording \
+            cannot be saved. Please try again, many thanks."
+            errM.hidden = false;
+            URL.revokeObjectURL(audioURL);
+            //this is really important to reset audio
+            audioChunks = [];
+
+            arrB[1].disabled = false;
+            arrB[2].disabled = true;
+
+        } else
         {
-            audioPlayback.setAttribute('src',"")
-        } 
+            const blobObj = {
+                index : ind,
+                idq : idd,
+                blob: audioBlob,
+                url: audioURL
+            }
 
-        audioPlayback.src = audioURL; //audioURL;
-        audioPlayback.style.display = 'block';
-    }
+            const objB = new Object(blobObj);
+            
+            arrayBlobs.push(objB);
 
-    arrB[1].disabled = false;
-    arrB[2].disabled = true;
+            const audioPlayback = cont.querySelector('.audio-playback');
+
+            if (audioPlayback) {
+                
+                if(audioPlayback.getAttribute('src') == null)
+                {
+                    audioPlayback.setAttribute('src',"")
+                } 
+
+                audioPlayback.src = audioURL; //audioURL;
+                audioPlayback.style.display = 'block';
+            }
+
+            arrB[1].disabled = false;
+            arrB[2].disabled = true;
+        }
+    });
 
 };
 
@@ -94,7 +129,6 @@ function Attach_Audio_Event(container)
 
     const buttonStart = container.querySelector('.start-record');
     const buttonEnd = container.querySelector('.stop-record');
-    const buttonReRecord = container.querySelector('.re-record')
 
     const divElementsArr = [container, buttonStart, buttonEnd];
 
@@ -105,6 +139,11 @@ function Attach_Audio_Event(container)
     buttonStart.addEventListener('click', function(){
         
         const cont_index = container.getAttribute('data-index');
+        const idd = container.getAttribute('data-euid');
+
+        const errM = document.getElementById('error_' + idd);
+        errM.innerText = ""
+        errM.hidden = true;
 
         const index = arrayBlobs.findIndex(bl => bl.index == cont_index);
 
@@ -112,6 +151,16 @@ function Attach_Audio_Event(container)
         {
             URL.revokeObjectURL(arrayBlobs[index].url);
             arrayBlobs.splice(index, 1);
+
+            const audioPlayback = container.querySelector('.audio-playback');
+            //console.log(audioPlayback)
+
+            if (audioPlayback) {
+                
+                audioPlayback.removeAttribute('src');
+                container.querySelector('.audio-status').hidden = true;
+            }
+
         }
     
         //this is really important to reset audio
@@ -179,16 +228,17 @@ async function SubmitMyQuiz() {
 
         if(container.getAttribute('data-euqtpe') == 'audio')
         {
-            console.log("AUDIO")
-            console.log(arrayBlobs)
-
             let ind = container.getAttribute('data-index');
             const index = arrayBlobs.findIndex(bl => bl.index == ind);
-            const bobj = arrayBlobs[index]
 
-            let fieldName = 'audio_' + bobj.index + '_' + bobj.idq + '_' + bobj.uid;
+            if(index !== -1)
+            {
+                const bobj = arrayBlobs[index]
 
-            formData.append(fieldName, arrayBlobs[index].blob, `answer_${Date.now()}.webm`);
+                let fieldName = 'audio_' + bobj.index + '_' + bobj.idq + '_' + bobj.uid;
+
+                formData.append(fieldName, arrayBlobs[index].blob, `answer_${Date.now()}.webm`);
+            }
         }
         
     });
@@ -197,7 +247,7 @@ async function SubmitMyQuiz() {
     formData.forEach((v, k) => formObj[k] = v);
 
     formData.append('action', 'eupass_qform_submit');
-     console.log(EupQ_Ajax_Obj)
+     //console.log(EupQ_Ajax_Obj)
     formData.append('eupassqnc', EupQ_Ajax_Obj.nonce.quiz_out);
 
     fetch(EupQ_Ajax_Obj.ajaxUrl, {
@@ -240,101 +290,3 @@ async function isVoiceTooLow(audioBlob, thresholdDb = -35) {
     return db < thresholdDb;
 }
 
-async function improve_audio_with_noise_reduction(audioBlob) {
-  
-    const tempCtx = new AudioContext();
-  const arrayBuffer = await audioBlob.arrayBuffer();
-  const decodedBuffer = await tempCtx.decodeAudioData(arrayBuffer);
-
-
-  const offlineCtx = new OfflineAudioContext(
-    decodedBuffer.numberOfChannels,
-    decodedBuffer.length,
-    decodedBuffer.sampleRate
-  );
-
-  const source = offlineCtx.createBufferSource();
-  source.buffer = decodedBuffer;
-
-  const lowShelf = offlineCtx.createBiquadFilter();
-  lowShelf.type = "lowshelf";
-  lowShelf.frequency.value = 80;
-  lowShelf.gain.value = -20; 
-
-  const highPass = offlineCtx.createBiquadFilter();
-  highPass.type = "highpass";
-  highPass.frequency.value = 80;
-
-  const presenceBoost = offlineCtx.createBiquadFilter();
-  presenceBoost.type = "peaking";
-  presenceBoost.frequency.value = 3000;
-  presenceBoost.Q.value = 1.5;
-  presenceBoost.gain.value = 3;
-
-  const highShelf = offlineCtx.createBiquadFilter();
-  highShelf.type = "highshelf";
-  highShelf.frequency.value = 6000;
-  highShelf.gain.value = 2;
-
-  const noiseGate = offlineCtx.createDynamicsCompressor();
-  noiseGate.threshold.value = -30;
-  noiseGate.knee.value = 40;
-  noiseGate.ratio.value = 2; 
-  noiseGate.attack.value = 0.03;
-  noiseGate.release.value = 0.025;
-
-  source.connect(lowShelf)
-        .connect(highPass)
-        .connect(presenceBoost)
-        .connect(highShelf)
-        .connect(noiseGate)
-        .connect(offlineCtx.destination);
-
-  source.start(0);
-  const renderedBuffer = await offlineCtx.startRendering();
-  const improvedBlob = bufferToWave(renderedBuffer);
-
-  return improvedBlob;
-}
-
-//i did not wrote the following function -> it's ai generated i do not know transforming buffer to audio wave.
-//it is like a translator for a standard format
-function bufferToWave(abuffer) {
-  const numOfChan = abuffer.numberOfChannels,
-        length = abuffer.length * numOfChan * 2 + 44,
-        buffer = new ArrayBuffer(length),
-        view = new DataView(buffer),
-        channels = [],
-        sampleRate = abuffer.sampleRate;
-
-  let offset = 0;
-  function writeString(s) { for (let i = 0; i < s.length; i++) view.setUint8(offset + i, s.charCodeAt(i)); }
-
-  // RIFF header
-  writeString('RIFF'); offset += 4;
-  view.setUint32(offset, 36 + abuffer.length * numOfChan * 2, true); offset += 4;
-  writeString('WAVE'); offset += 4;
-  writeString('fmt '); offset += 4;
-  view.setUint32(offset, 16, true); offset += 4;
-  view.setUint16(offset, 1, true); offset += 2;
-  view.setUint16(offset, numOfChan, true); offset += 2;
-  view.setUint32(offset, sampleRate, true); offset += 4;
-  view.setUint32(offset, sampleRate * numOfChan * 2, true); offset += 4;
-  view.setUint16(offset, numOfChan * 2, true); offset += 2;
-  view.setUint16(offset, 16, true); offset += 2;
-  writeString('data'); offset += 4;
-  view.setUint32(offset, abuffer.length * numOfChan * 2, true); offset += 4;
-
-  for (let ch = 0; ch < numOfChan; ch++) channels.push(abuffer.getChannelData(ch));
-  let sample = 0;
-  while (sample < abuffer.length) {
-    for (let ch = 0; ch < numOfChan; ch++) {
-      const s = Math.max(-1, Math.min(1, channels[ch][sample]));
-      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-      offset += 2;
-    }
-    sample++;
-  }
-
-  return new Blob([buffer], { type: "audio/wav" });
-}

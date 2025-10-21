@@ -281,7 +281,6 @@ class EupassqDatabase {
                 euqiidd BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                 euqtid CHAR(8) NOT NULL ,
                 eupqid BIGINT UNSIGNED NOT NULL,
-                eupquid BIGINT UNSIGNED NOT NULL,
                 euqanswer TEXT NOT NULL, 
                 PRIMARY KEY (euqiidd)
             ) $charset_collate;";
@@ -324,11 +323,10 @@ class EupassqDatabase {
             $dObj = array(
                 'euqtid' => $code,
                 'eupqid' => $euqa['question_id'],
-                'eupquid' => $euqa['uid'],
-                'euqanswer' => $euqa['answer']
+                'euqanswer' => $euqa['answer'] == null ? "" : $euqa['answer']
             );
 
-            $dObjFormat = array('%s', '%d', '%d', '%s');
+            $dObjFormat = array('%s', '%d', '%s');
 
             $result_insert = $this->_wpdb->insert($eupassq_tmp_quiz, $dObj, $dObjFormat);
             

@@ -1,13 +1,13 @@
 (function (send) {
   XMLHttpRequest.prototype.send = function (data) {
 
-    console.log(
-      'called injection'
-    )
+    //console.log(
+    //   'called injection'
+    // )
     try {
       if (data instanceof FormData && data.get('action') === 'qmn_process_quiz') {
         const uidd = data.get('qsm_unique_key');
-        console.log('Intercepted quiz submission, UUID:', uidd);
+        //console.log('Intercepted quiz submission, UUID:', uidd);
 
         hideTill(true);
         send.call(this, data);
@@ -58,7 +58,7 @@ function hideTill(hide = true) {
 
 
 async function ajaxCall(uuiid) {
-  console.log('ajaxCall started', uuiid);
+  //console.log('ajaxCall started', uuiid);
 
   const newData = new FormData();
   newData.set('uuid', uuiid);
@@ -72,8 +72,8 @@ async function ajaxCall(uuiid) {
 
     const resText = await response.text();
     const res = JSON.parse(resText);
-    console.log('ajaxCall response:');
-    console.log(res)
+    //console.log('ajaxCall response:');
+    //console.log(res)
 
     if (res?.data?.exist) {
 
@@ -95,9 +95,9 @@ async function ajaxCall(uuiid) {
         //   '.qsm-quiz-container'
         // );
         const container = document.getElementById('main');
-        console.log(container)
+        //console.log(container)
         if (container) {
-          console.log('container found:');
+          //console.log('container found:');
           container.innerHTML = rendered_underscore;
         }
 
@@ -105,32 +105,4 @@ async function ajaxCall(uuiid) {
 
     }
 
-    // if (res?.data?.exist) {
-    //   const uniqueQSMId = res.data.uidq;
-
-    //   const oldBtn = document.getElementById('qsm_retake_button');
-    //   if (oldBtn) oldBtn.remove();
-
-    //   const newBtn = document.createElement('button');
-    //   newBtn.id = 'go_to_next_quiz_button';
-    //   newBtn.textContent = 'Go to next quiz section';
-    //   newBtn.classList.add('qsm-btn');
-    //   newBtn.classList.add('qmn_btn') 
-
-
-    //   newBtn.addEventListener('click', () => {
-    //     window.location.href = '/europassQ/' + uniqueQSMId;
-    //   });
-
-    //   const container = document.querySelector(
-    //     '.qsm-quiz-container.qsm-quiz-container-2.qmn_quiz_container.mlw_qmn_quiz.quiz_theme_default.qsm-recently-active'
-    //   );
-
-    //   if (container) {
-    //     container.innerHTML = '';
-    //     container.appendChild(newBtn);
-    //   }
-
-    //   console.log('New button created for next quiz section.');
-    // } 
 }
