@@ -47,6 +47,19 @@ class EupassqDatabase {
             WHERE euqtid = %s", esc_html($result_code)), ARRAY_A);
     }
 
+    public function EupassQ_Delete_User_EupassQ_Answers ($result_code)
+    {
+        $table_name = $this->_wpdb->prefix . 'eupassq_tmp'; 
+
+        $deleted = $this->_wpdb->delete(
+            $table_name,
+            [ 'euqtid' => $result_code ],
+            [ '%d' ]
+        );
+
+        return $deleted;
+    }
+
     public function EupassQ_Set_Quiz_Settings($uuid)
     {
         $results_row = $this->EupassQ_Query_QSM_Results($uuid);
@@ -146,6 +159,16 @@ class EupassqDatabase {
 
     }
 
+    public function EupassQ_Delete_Single_Question ($q_id)
+    {
+        $deleted = $this->_wpdb->delete(
+            $this->euqTable,
+            [ 'euqid' => $q_id ],
+            [ '%d' ]
+        );
+
+        return $deleted;
+    }
 
     public function Eupassq_Find_Single_Question_PostId($postid)
     {

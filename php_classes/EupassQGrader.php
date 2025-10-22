@@ -17,6 +17,36 @@ class EupassQGrader
         
     }
 
+    function EupassQ_Delete_User_Results($result_code)
+    {
+        $arr_path = [];
+        $user_answers = $this->dbGb->EupassQ_Get_User_EupassQ_Answers($result_code);
+
+        foreach ($user_answers as $answer) {
+            $question = $this->dbGb->Eupassq_Get_Single_Question($answer['eupqid']);
+            
+            if($question->euqtpe == 'audio')
+            {
+                array_push($arr_path, basename($answer['euqanswer']));
+            }
+        }
+
+        foreach ($arr_path as $filename) {
+
+            $file_path = WP_CONTENT_DIR . '/plugins/eupassq/assets/tmp/' . $filename;
+
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            } else {
+                echo "File does not exist.";
+            }
+        }
+        
+        $deleted = $this->dbGb->EupassQ_Delete_User_EupassQ_Answers($result_code);
+
+        return $deleted;
+    }
+
     function EupassQ_Evaluate_Written_Production($answer, $level)
     {
         $rubricText = "Sei un insegnante di italiano. Valuta questo testo scritto da uno studente di livello 
@@ -211,7 +241,7 @@ class EupassQGrader
                     $res_array['eupassQ_audio']['partial'] += 0;
                     $res_array['eupassQ_audio']['total'] += 1;
                 }
-
+                
             }else
             {
                 if($question->euqtpe == 'text')

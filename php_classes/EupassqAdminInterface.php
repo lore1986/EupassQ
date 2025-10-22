@@ -26,6 +26,9 @@ class EupassqAdminInterface
         add_filter('manage_eupassq_posts_columns', array($this, 'EupassQ_add_content_column'));
         add_action('manage_eupassq_posts_custom_column', array($this, 'EupassQ_fill_content_columns'), 10, 2);
 
+        add_action('before_delete_post', [$this, 'eupassq_handle_post_delete']);
+  
+
     }
 
 
@@ -69,17 +72,22 @@ class EupassqAdminInterface
 
     function EupassQ_fill_content_columns($column, $post_id) {
 
-        if ($column === 'euqlvl') {
 
-            $eupassQ = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);
-            echo esc_html($eupassQ->euqlvl ?: '—');
+        $eupassQ = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);
+
+        if($eupassQ)
+        {
+            if ($column === 'euqlvl') {
+                echo esc_html($eupassQ->euqlvl ?: '—');
+            }
+
+            if ($column === 'euqcontent') {
+
+                echo esc_html($eupassQ->euqcontent ?: '—');
+            }
         }
 
-        if ($column === 'euqcontent') {
-
-            $eupassQ = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);
-            echo esc_html($eupassQ->euqcontent ?: '—');
-        }
+        
     }
 
     function EurpasQ_render_admin_question()
@@ -325,7 +333,15 @@ class EupassqAdminInterface
         <?php
     }
 
-
+    function eupassq_handle_post_delete($post_id) {
+        $post = get_post($post_id);
+        if ( $post && $post->post_type === 'eupassq' ) {
+            $question = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);
+            if ( $question && isset($question->euqid) ) {
+                $this->dbGb->EupassQ_Delete_Single_Question($question->euqid);
+            }
+        }
+    }
     /**
      * Validate question data before pubishing
      */
@@ -334,10 +350,20 @@ class EupassqAdminInterface
         if ( $data['post_type'] !== 'eupassq' ) { return $data;}
         if ( $data['post_status'] === 'auto-draft' ) {return $data;}
 
+        $post_id = isset($postarr['ID']) ? intval($postarr['ID']) : 0;
+
+        if($data['post_status'] === 'trash')
+        {
+            // $question = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);
+            // if ( $question && isset($question->euqid) ) {
+            //     $this->dbGb->EupassQ_Delete_Single_Question($question->euqid);
+            // }
+
+            return $data;
+        }
+
         $euqtype = isset($_POST['euqtpe']) ? sanitize_key($_POST['euqtpe']) : '';
         $euqlvl  = isset($_POST['euqlvl']) ? sanitize_text_field($_POST['euqlvl']) : '';
-
-        $post_id = isset($postarr['ID']) ? intval($postarr['ID']) : 0;
 
         $data['post_title'] = $post_id . '-' . ( $euqtype ?: 'unknown' );
         $data['post_name']  = sanitize_title( $data['post_title'] );
@@ -366,11 +392,13 @@ class EupassqAdminInterface
         if (!current_user_can('edit_post', $post_id)) {return;}
         if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
         if ( wp_is_post_revision( $post_id ) ) return;
+        if( $post->post_type == 'eupassq' && ($_POST['euqtpe'] == null ||  $_POST['euqlvl'] == null)) return;
 
         global $pagenow;
 
         if($pagenow != "post-new.php")
         {
+            
             $dbInstance = $this->dbGb->Eupassq_Find_Single_Question_PostId($post_id);
             $counter = $action = 0;
 

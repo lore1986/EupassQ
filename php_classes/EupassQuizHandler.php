@@ -8,7 +8,6 @@ class EupassQuizHandler {
     private $grader;
 
     public function __construct() {
-        global $wpdb;
         $this->grader = new EupassQGrader(); 
     }
 
@@ -26,6 +25,13 @@ class EupassQuizHandler {
 
         return $test;
     }
+
+    public function EupassQ_Delete_User_Results($result_code)
+    {
+        $deleted = $this->grader->EupassQ_Delete_User_Results($result_code);
+
+        return $deleted;
+    }   
 
 
 
