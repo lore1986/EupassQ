@@ -20,7 +20,7 @@ get_header();
        
         if ( $result_code ) {
 
-            //$results = $handler->EupassQ_Calculate_Get_User_Results($result_code, $qsm_id);
+            $results = $handler->EupassQ_Calculate_Get_User_Results($result_code, $qsm_id);
 
             $handler->EupassQ_Delete_User_Results($result_code);
 

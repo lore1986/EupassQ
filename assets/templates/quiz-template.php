@@ -15,7 +15,8 @@ $question_pool = $GLOBALS['question_pool'] ?? [];
     <div class="EupassQ-style">
         <div class="container mt-4">
             <div class="row text-center m-2">
-                <h2>Text and Audio Production Test</h2> 
+                <p> <?php esc_attr_e('procedi', 'eupassq'); ?> </p>
+                <!-- <h2>Text and Audio Production Test</h2>  -->
             </div>
             <form id="eupassq_quiz_form" class="EupassQ-form" >
                 <input hidden value="<?php echo $user_info ?>" name="user_info" />

@@ -6,9 +6,6 @@
  * Description: A simple quiz plugin that lets admins create questions and serve them to users.
  * Version:     1.0.0
  * Author:      Jep
- * Author URI:  https://example.com
- * License:     GPLv2 or later
- * Text Domain: eupassq
  */
 
 
@@ -57,16 +54,20 @@ add_action( 'admin_enqueue_scripts', [$admin_interface, 'eupassq_admin_enqueue_s
 add_action( 'wp_enqueue_scripts', [$question_manager, 'Eupassq_EnqueueQuestionScripts']); 
 add_action( 'wp_enqueue_scripts', 'Eupassq_EnqueueSharedScripts');
 
+add_action( 'init', function() {
+
+    $ec = load_plugin_textdomain(
+        'eupassq',
+        false,
+        dirname( plugin_basename( __FILE__ ) ) . '/assets/languages/'
+    );
+
+});
+
+
 function Eupassq_EnqueueSharedScripts()
 {
     wp_enqueue_script('shared_script',  plugin_dir_url(__FILE__) . 'assets/js/shared.js', array('jquery'), null, false );
-
-    // wp_localize_script('shared_script', 'EupQ_Ajax_Obj', array(
-    //     'ajaxUrl' => admin_url('admin-ajax.php'),
-    //     'nonce' => [
-    //             'quiz_out' => $this->nc::create($this->nc::QUIZ_SUBMIT) 
-    //         ]
-    // ));
 }
 
 
