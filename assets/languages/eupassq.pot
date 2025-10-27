@@ -1,57 +1,148 @@
+# Copyright (C) 2025 Jep
+# This file is distributed under the same license as the EupassQ plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: EupassQ 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/eupassq\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-23T07:09:03+00:00\n"
+"POT-Creation-Date: 2025-10-23T12:57:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eupassq\n"
 
-#: php_classes/EupassqAdminInterface.php:111
-msgid "EupassQs"
-msgstr ""
-
-#: php_classes/EupassqAdminInterface.php:112
+#. Plugin Name of the plugin
+#: eupassq.php
 msgid "EupassQ"
 msgstr ""
 
-#: php_classes/EupassqAdminInterface.php:113
-msgid "Add New Question"
+#. Plugin URI of the plugin
+#: eupassq.php
+msgid "---"
 msgstr ""
 
-#: php_classes/EupassqAdminInterface.php:114
-msgid "Edit Question"
+#. Description of the plugin
+#: eupassq.php
+msgid "A simple quiz plugin that lets admins create questions and serve them to users."
 msgstr ""
 
-#: php_classes/EupassqAdminInterface.php:139
-msgid "Missing type of question or level. Please fill in required fields before publishing."
+#. Author of the plugin
+#: eupassq.php
+msgid "Jep"
 msgstr ""
 
-#: php_classes/EupassqAdminInterface.php:142
-msgid "Database error while saving the EupassQ entry."
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "start-test"
+msgstr "Text and Audio production Test Section"
 
-#: php_classes/EupassqAdminInterface.php:145
-msgid "An unknown error occurred."
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "start-recording"
+msgstr "Start Recording"
 
-#: php_classes/EupassqAdminInterface.php:322
-msgid "Please Select Level"
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "stop-recording"
+msgstr "Stop Recording"
 
-#: php_classes/EupassqAdminInterface.php:474
-msgid "No questions available."
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "submit-quiz"
+msgstr "Submit your test and get your results."
 
-#: php_classes/EupassQNonce.php:48
-msgid "Security check failed"
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "text-question-heading"
+msgstr "Written Production Section"
 
-#: procedi
-msgid "procedi"
-msgstr "please proceed"
+# assets/templates/quiz-template.php
+msgid "audio-question-heading"
+msgstr "Audio Production Section"
+
+#php_classes/templates/results-view-template.php
+msgid "result-summary"
+msgstr "Your Results Summary"
+
+#php_classes/templates/results-view-template.php
+msgid "overall-score"
+msgstr "Overall Score"
+
+#php_classes/templates/results-view-template.php
+msgid "percentage-score"
+msgstr "Percentage"
+
+#php_classes/templates/results-view-template.php
+msgid "multichoice-results"
+msgstr "Multiple Choice Questions"
+
+#php_classes/templates/results-view-template.php
+msgid "your-score"
+msgstr "Your Score"
+
+#php_classes/templates/results-view-template.php
+msgid "question-question"
+msgstr "Question"
+
+#php_classes/templates/results-view-template.php
+msgid "score-score"
+msgstr "Score"
+
+#php_classes/templates/results-view-template.php
+msgid "correct-answer-question"
+msgstr "Correct Answer"
+
+#php_classes/templates/results-view-template.php
+msgid "your-answer"
+msgstr "Answer"
+
+#php_classes/templates/results-view-template.php
+msgid "your-result-question"
+msgstr "Result"
+
+#php_classes/templates/results-view-template.php
+msgid "written-task"
+msgstr "Written Task"
+
+#php_classes/templates/results-view-template.php
+msgid "score-breakdown"
+msgstr "Score Breakdown"
+
+#php_classes/templates/results-view-template.php
+msgid "efficacia-comunicativa"
+msgstr "Communicative Effectiveness"
+
+#php_classes/templates/results-view-template.php
+msgid "correttezza-morfosintattica"
+msgstr "Morphosyntactic correctness"
+
+#php_classes/templates/results-view-template.php
+msgid "lessico-lessico"
+msgstr "Lexicon"
+
+#php_classes/templates/results-view-template.php
+msgid "orto-orto"
+msgstr "Spelling"
+
+#php_classes/templates/results-view-template.php
+msgid "pronuncia-intonazione"
+msgstr "Pronunciation and Intonation"
+
+
+#php_classes/templates/results-view-template.php
+msgid "feedback-feedback"
+msgstr "Feedback"
+
+#php_classes/templates/results-view-template.php
+msgid "oral-task"
+msgstr "Oral Task"
+
+
+# php_classes/EupassQBridgeQSM.php
+msgid "proceed-next"
+msgstr "Please proceed with the next section of your test"
+
+
+#php_classes/EupassQGrader.php
+msgid "audio-not-elaborate"
+msgstr "We could not elaborate the audio. Please check the recording quality or try again."
+
+

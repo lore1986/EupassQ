@@ -1,58 +1,54 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: EupassQ 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/eupassq\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: es_ES <LL@li.org>\n"
-"Language: es_ES\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-23T07:09:03+00:00\n"
+"POT-Creation-Date: 2025-10-23T12:57:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eupassq\n"
 
-#: php_classes/EupassqAdminInterface.php:111
-msgid "EupassQs"
-msgstr ""
-
-#: php_classes/EupassqAdminInterface.php:112
+#. Plugin Name of the plugin
+#: eupassq.php
 msgid "EupassQ"
 msgstr ""
 
-#: php_classes/EupassqAdminInterface.php:113
-msgid "Add New Question"
+#. Plugin URI of the plugin
+#: eupassq.php
+msgid "---"
 msgstr ""
 
-#: php_classes/EupassqAdminInterface.php:114
-msgid "Edit Question"
+#. Description of the plugin
+#: eupassq.php
+msgid "A simple quiz plugin that lets admins create questions and serve them to users."
 msgstr ""
 
-#: php_classes/EupassqAdminInterface.php:139
-msgid "Missing type of question or level. Please fill in required fields before publishing."
+#. Author of the plugin
+#: eupassq.php
+msgid "Jep"
 msgstr ""
 
-#: php_classes/EupassqAdminInterface.php:142
-msgid "Database error while saving the EupassQ entry."
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "start-test"
+msgstr "Sección de prueba de producción de texto y audio"
 
-#: php_classes/EupassqAdminInterface.php:145
-msgid "An unknown error occurred."
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "start-recording"
+msgstr "Iniciar grabación"
 
-#: php_classes/EupassqAdminInterface.php:322
-msgid "Please Select Level"
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "stop-recording"
+msgstr "Detener grabación"
 
-#: php_classes/EupassqAdminInterface.php:474
-msgid "No questions available."
-msgstr ""
+# assets/templates/quiz-template.php
+msgid "submit-quiz"
+msgstr "Envía tu prueba y obtén tus resultados."
 
-#: php_classes/EupassQNonce.php:48
-msgid "Security check failed"
-msgstr ""
-
-#: procedi
-msgid "procedi"
-msgstr "please proceed"
+# php_classes/EupassQBridgeQSM.php
+msgid "proceed-next"
+msgstr "Por favor, continúe con la siguiente sección de su prueba."

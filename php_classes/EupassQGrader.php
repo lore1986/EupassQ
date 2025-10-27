@@ -10,9 +10,9 @@ class EupassQGrader
     private $client;
     private $dbGb;
 
-    public function __construct() {
+    public function __construct($_dbGb ) {
 
-        $this->dbGb = new EupassqDatabase();
+        $this->dbGb = $_dbGb;
         $this->client = OpenAI::client($this->openaikey);
         
     }
@@ -47,16 +47,29 @@ class EupassQGrader
         return $deleted;
     }
 
-    function EupassQ_Evaluate_Written_Production($answer, $level)
+    function EupassQ_Evaluate_Written_Production($answer, $level, $feedbackLang = 'English')
     {
-        $rubricText = "Sei un insegnante di italiano. Valuta questo testo scritto da uno studente di livello 
-        $level. Valuta in modo coerente con gli standard di certificazione linguistica ufficiale.
-        Valuta SOLO la PRODUZIONE SCRITTA. Criteri:
+        $feedback_language_instruction = '';
+
+        $level = strtoupper(trim($level));
+
+        if (in_array($level, ['A1', 'A2'])) {
+            $feedback_language_instruction = "Give the feedback in $feedbackLang, clearly and simply, suitable for a student of level $level.";
+        } else {
+            $feedback_language_instruction = "Dai il feedback in italiano naturale e professionale, adatto a uno studente di livello $level.";
+        }
+
+        // Rubric text
+        $rubricText = "Sei un insegnante di italiano. Valuta questo testo scritto da uno studente di livello $level.
+        Valuta in modo coerente con gli standard di certificazione linguistica ufficiale.
+        Valuta SOLO la PRODUZIONE SCRITTA.
+        Criteri:
         - Efficacia comunicativa: 0–4
         - Correttezza morfosintattica: 0–3.5
         - Adeguatezza e ricchezza lessicale: 0–1.5
         - Ortografia e punteggiatura: 0–1
-        Punteggio massimo: 10 punti.";
+        Punteggio massimo: 10 punti.
+        $feedback_language_instruction";
 
         $studentText = $answer['euqanswer'];
 
@@ -93,30 +106,45 @@ class EupassQGrader
                     ],
                 ],
             ]);
-            
-            return json_decode($textGrade->choices[0]->message->content, true);
-        } 
-        catch (\Throwable $e) {
-            // $totalGrades['feedback'][] = "Errore: " . $e->getMessage();
-        }
 
+            return json_decode($textGrade->choices[0]->message->content, true);
+
+        } catch (\Throwable $e) {
+            error_log("Errore valutazione scritta: " . $e->getMessage());
+            return [
+                'efficacia_comunicativa' => 0,
+                'correttezza_morfosintattica' => 0,
+                'lessico' => 0,
+                'ortografia' => 0,
+                'punteggio_totale' => 0,
+                'feedback' => 'Errore durante la valutazione.'
+            ];
+        }
     }
 
-    function EupassQ_Evaluate_Audio_Production($answer, $level) {
-        
+
+    function EupassQ_Evaluate_Audio_Production($answer, $level, $feedbackLang = 'English') {
         $audioResult = [];
         $audioUrl = $answer['euqanswer'];
 
-        $rubricAudio = "Sei un insegnante di italiano. Valuta la trascrizione di questo audio registrato da uno studente di livello 
-        $level. Valuta in modo coerente con gli standard di certificazione linguistica ufficiale.
+        $level = strtoupper(trim($level));
+        if (in_array($level, ['A1', 'A2'])) {
+            $feedback_language_instruction = "Give the feedback in $feedbackLang, clearly and simply, suitable for a student of level $level.";
+        } else {
+            $feedback_language_instruction = "Dai il feedback in italiano naturale e professionale, adatto a uno studente di livello $level.";
+        }
+
+        $rubricAudio = "Sei un insegnante di italiano. Valuta la trascrizione di questo audio registrato da uno studente di livello $level.
+        Valuta in modo coerente con gli standard di certificazione linguistica ufficiale.
         - Efficacia comunicativa: 0–4
         - Correttezza morfosintattica: 0–3
         - Adeguatezza e ricchezza lessicale: 0–2
         - Pronuncia e intonazione: 0–1
-        Punteggio massimo: 10 punti.";
+        Punteggio massimo: 10 punti.
+        $feedback_language_instruction";
 
         try {
-
+            // Download and save temporary audio file
             $tempFile = tempnam(sys_get_temp_dir(), 'audio_') . '.webm';
             file_put_contents($tempFile, file_get_contents($audioUrl));
 
@@ -124,17 +152,16 @@ class EupassQGrader
             if ($tempFile && file_exists($tempFile)) {
                 try {
                     $transcription = $this->client->audio()->transcribe([
-                        'model' => 'whisper-1', 
+                        'model' => 'whisper-1',
                         'file'  => fopen($tempFile, 'r'),
                         'response_format' => 'verbose_json',
                     ]);
                     $audioText = $transcription->text;
                 } catch (\Throwable $e) {
-                    echo "<h2>Errore nella trascrizione audio</h2>";
-                    echo "<pre>" . $e->getMessage() . "</pre>";
+                    error_log("Errore nella trascrizione audio: " . $e->getMessage());
                 }
             }
-            
+
             if ($audioText) {
                 $audioGrade = $this->client->chat()->create([
                     'model' => 'gpt-4.1',
@@ -149,11 +176,11 @@ class EupassQGrader
                             'schema' => [
                                 'type' => 'object',
                                 'properties' => [
-                                    'efficacia_comunicativa' => ['type' => 'integer'],
-                                    'correttezza_morfosintattica' => ['type' => 'integer'],
-                                    'lessico' => ['type' => 'integer'],
-                                    'pronuncia_intonazione' => ['type' => 'integer'],
-                                    'punteggio_totale' => ['type' => 'integer'],
+                                    'efficacia_comunicativa' => ['type' => 'number'],
+                                    'correttezza_morfosintattica' => ['type' => 'number'],
+                                    'lessico' => ['type' => 'number'],
+                                    'pronuncia_intonazione' => ['type' => 'number'],
+                                    'punteggio_totale' => ['type' => 'number'],
                                     'feedback' => ['type' => 'string'],
                                 ],
                                 'required' => [
@@ -170,6 +197,17 @@ class EupassQGrader
                 ]);
 
                 $audioResult = json_decode($audioGrade->choices[0]->message->content, true);
+
+            }else
+            {
+                $audioResult = [
+                    'efficacia_comunicativa' => 0,
+                    'correttezza_morfosintattica' => 0,
+                    'lessico' => 0,
+                    'pronuncia_intonazione' => 0,
+                    'punteggio_totale' => 0,
+                    'feedback' => esc_attr__( 'audio-not-elaborate', 'eupassq' )
+                ];
             }
 
             unlink($tempFile);
@@ -182,10 +220,22 @@ class EupassQGrader
     }
 
 
+
     function EupassQ_Handle_Submissions($result_code, $qsmId) {
       
 
        $answers = $this->dbGb->EupassQ_Get_User_EupassQ_Answers($result_code);
+       $locale = get_locale();
+
+       $feedbackLang = match (substr($locale, 0, 2)) {
+            'de' => 'German',
+            'en' => 'English',
+            'it' => 'Italian',
+            'fr' => 'French',
+            'es' => 'Spanish',
+            default => 'English'
+        };
+
         
         $res_array = [
             
@@ -210,7 +260,6 @@ class EupassQGrader
     
         foreach ($answers as $answer) {
             
-            //answer could be empty in that case count as not answered ==> 0 point no feedback
             
             $question = $this->dbGb->Eupassq_Get_Single_Question( intval($answer['eupqid']));
 
@@ -247,7 +296,7 @@ class EupassQGrader
                 if($question->euqtpe == 'text')
                 {
                     
-                    $textResult = $this->EupassQ_Evaluate_Written_Production($answer, $question->euqlvl);
+                    $textResult = $this->EupassQ_Evaluate_Written_Production($answer, $question->euqlvl, $feedbackLang);
                     $single_q['efficacia_comunicativa'] = $textResult['efficacia_comunicativa'];
                     $single_q['correttezza_morfosintattica'] = $textResult['correttezza_morfosintattica'];
                     $single_q['lessico'] = $textResult['lessico'];
@@ -256,14 +305,13 @@ class EupassQGrader
                     $single_q['feedback'] = stripslashes($textResult['feedback']);
 
                     array_push($res_array['eupassQ_text']['qanda'], $single_q);
-                    //$res_array['eupassQ_text']['qanda'] = $single_q;
                     $res_array['eupassQ_text']['partial'] += $textResult['punteggio_totale'];
                     $res_array['eupassQ_text']['total'] += 1;
 
                 }else
                 {
         
-                    $audioResult = $this->EupassQ_Evaluate_Audio_Production($answer, $question->euqlvl);
+                    $audioResult = $this->EupassQ_Evaluate_Audio_Production($answer, $question->euqlvl, $feedbackLang);
 
                     $single_q['efficacia_comunicativa'] = $audioResult['efficacia_comunicativa'];
                     $single_q['correttezza_morfosintattica'] = $audioResult['correttezza_morfosintattica'];
@@ -272,7 +320,6 @@ class EupassQGrader
                     $single_q['feedback'] = stripslashes($audioResult['feedback']);
 
                     array_push($res_array['eupassQ_audio']['qanda'], $single_q);
-                    //$res_array['eupassQ_audio']['qanda'] = $single_q;
                     $res_array['eupassQ_audio']['partial'] += $audioResult['punteggio_totale'];
                     $res_array['eupassQ_audio']['total'] += 1;
 
@@ -285,6 +332,7 @@ class EupassQGrader
 
 
         $results_row = $this->dbGb->EupassQ_Query_QSM_Results($qsmId);
+
 
         $res_array['qsm']['total'] = intval($results_row->total) - 1;
         $res_array['qsm']['partial'] = intval($results_row->correct); //check

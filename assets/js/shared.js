@@ -1,3 +1,4 @@
+
 (function (send) {
   XMLHttpRequest.prototype.send = function (data) {
 
@@ -27,28 +28,16 @@ function hideTill(hide = true) {
 
   if (!container) return;
 
-  let spinner = document.getElementById('quiz-loading-spinner');
+  showSpinner("Loading next section...");
 
   if (hide) {
     container.hidden = true;
     container.innerHTML = '';
 
-  
-    if (!spinner) {
-      spinner = document.createElement('div');
-      spinner.id = 'quiz-loading-spinner';
-      spinner.innerHTML = `
-        <div class="spinner-overlay">
-          <div class="spinner"></div>
-          <p>Loading next section...</p>
-        </div>
-      `;
-      document.body.appendChild(spinner);
-    }
   } else {
     
     container.hidden = false;
-    if (spinner) spinner.remove();
+    hideSpinner();
   }
 }
 
@@ -65,11 +54,9 @@ async function ajaxCall(uuiid) {
     body: newData
   });
 
-  // const resText = await response.text();
-  // const res = JSON.parse(resText);
-
   const res = await response.json();
-
+  hideSpinner();
+  
   if (res?.data?.exist) {
 
     const uniqueQSMId = res.data.uidq;

@@ -25,16 +25,46 @@ class EupassqDatabase {
         $quiz_results_data = unserialize($results_row->quiz_results);
         $questions = $quiz_results_data[1];
 
-        for ($i=0; $i < count($questions) - 1; $i++) {  //-1 because last question is not a question but accept user agreement
+        $arr_ans_ret = [];
+
+        for ($i = 0; $i < count($questions); $i++) {
             
+            $q = $questions[$i];
+
+            $qtext_raw = isset($q[0]) ? (string)$q[0] : '';
+            if ($qtext_raw && stripos($qtext_raw, 'quiz-consent') !== false) {
+                continue;
+            }
+
+            $correct_answers = [];
+            if (isset($q['correct_answer']) && is_array($q['correct_answer'])) {
+                $correct_answers = array_values($q['correct_answer']);
+            }
+
+            $user_answers = [];
+            if (isset($q['user_answer'])) {
+                if (is_array($q['user_answer'])) {
+                    $user_answers = array_values($q['user_answer']);
+                } elseif (is_string($q['user_answer']) && $q['user_answer'] !== '') {
+                    $user_answers = [$q['user_answer']];
+                }
+            }
+
+            $is_correct = isset($q['correct']) ? $q['correct'] : '';
+
+            $question_text = html_entity_decode($qtext_raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
             $arr_s = [
-                'question_text' => $questions[$i][0],
-                'question_answer' => implode(', ', $questions[$i]['user_answer']),
-                'iscorrect' => $questions[$i]['correct'] 
+                'id'                      => isset($q['id']) ? $q['id'] : null,
+                'question_text'           => $question_text,
+                'question_answer'         => implode(', ', $user_answers),
+                'question_correct_answer' => implode(', ', $correct_answers),
+                'iscorrect'               => $is_correct,
             ];
 
-            array_push($arr_ans_ret, $arr_s);
+            $arr_ans_ret[] = $arr_s;
         }
+
 
         return $arr_ans_ret;
     }
