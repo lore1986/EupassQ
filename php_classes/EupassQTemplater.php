@@ -180,73 +180,106 @@ class EupassQTemplate
             session_start();
         }
 
-        // Prevent duplicate sends in the same session
         if ( isset( $_SESSION['eupassq_email_sent_' . $results_view_id] ) ) {
             return false;
         }
 
-        $subject = 'Your EupassQ Test Results';
+        $subject = __( 'Your EupassQ Test Results', 'eupassq' );
         $headers = [ 'Content-Type: text/html; charset=UTF-8' ];
 
         ob_start();
         ?>
-        <div style="font-family: Arial, sans-serif; color:#333;">
-            <h2 style="color:#2a7ae2;">Your EupassQ Test Results Summary</h2>
-            <p><strong>Overall Score:</strong> <?php echo esc_html( $results['user_score'] ); ?></p>
-            <p><strong>Percentage:</strong> <?php echo esc_html( $results['user_percentage'] ); ?>%</p>
+        <div style="font-family: Arial, sans-serif; color:#333; background:#fafafa; padding:20px;">
+            <div style="max-width:700px; margin:auto; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05); padding:20px;">
+                
+                <h2 style="color:#2a7ae2; text-align:center;">
+                    <?php esc_html_e( 'result-summary', 'eupassq' ); ?>
+                </h2>
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
 
-            <hr style="border:0; border-top:1px solid #ddd; margin:20px 0;">
-            <h3>Multiple Choice Questions</h3>
-            <p><strong><?php echo esc_html( $results['qsm']['partial'] ); ?> / <?php echo esc_html( $results['qsm']['total'] ); ?></strong></p>
-            <table style="width:100%; border-collapse:collapse;" border="1" cellpadding="6">
-                <thead>
-                    <tr style="background:#f4f4f4;">
-                        <th>#</th>
-                        <th>Question</th>
-                        <th>Your Answer</th>
-                        <th>Result</th>
+                <table style="width:100%; text-align:center; margin-bottom:20px;">
+                    <tr>
+                        <td style="width:50%; padding:10px;">
+                            <h4 style="color:#555;"><?php esc_html_e( 'overall-score', 'eupassq' ); ?></h4>
+                            <p style="font-size:24px; font-weight:bold; color:#2a7ae2;">
+                                <?php echo esc_html( $results['user_score'] ); ?>
+                            </p>
+                        </td>
+                        <td style="width:50%; padding:10px;">
+                            <h4 style="color:#555;"><?php esc_html_e( 'percentage-score', 'eupassq' ); ?></h4>
+                            <p style="font-size:24px; font-weight:bold; color:#2a7ae2;">
+                                <?php echo esc_html( $results['user_percentage'] ); ?>%
+                            </p>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ( $results['qsm']['qanda'] as $i => $item ): ?>
-                        <tr>
-                            <td><?php echo $i + 1; ?></td>
-                            <td><?php echo wp_kses_post( $item['question_text'] ); ?></td>
-                            <td><?php echo esc_html( $item['question_answer'] ); ?></td>
-                            <td style="text-align:center;">
-                                <?php echo ($item['iscorrect'] === 'correct')
-                                    ? '<span style="color:green;">✔</span>'
-                                    : '<span style="color:red;">✗</span>'; ?>
-                            </td>
+                </table>
+
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+                <!-- MULTIPLE CHOICE RESULTS -->
+                <h3 style="color:#2a7ae2;"><?php esc_html_e( 'multichoice-results', 'eupassq' ); ?></h3>
+                <p style="font-size:16px;">
+                    <?php esc_html_e( 'your-score', 'eupassq' ); ?>:
+                    <strong><?php echo esc_html( $results['qsm']['partial'] ); ?> / <?php echo esc_html( $results['qsm']['total'] ); ?></strong>
+                </p>
+
+                <table style="width:100%; border-collapse:collapse; border:1px solid #ddd; margin-bottom:25px;">
+                    <thead>
+                        <tr style="background:#f7f7f7; text-align:left;">
+                            <th style="padding:8px;">#</th>
+                            <th style="padding:8px;"><?php esc_html_e( 'question-question', 'eupassq' ); ?></th>
+                            <th style="padding:8px;"><?php esc_html_e( 'correct-answer-question', 'eupassq' ); ?></th>
+                            <th style="padding:8px;"><?php esc_html_e( 'your-answer', 'eupassq' ); ?></th>
+                            <th style="padding:8px; text-align:center;"><?php esc_html_e( 'your-result-question', 'eupassq' ); ?></th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ( $results['qsm']['qanda'] as $i => $item ) : ?>
+                            <?php $is_correct = ( isset($item['iscorrect']) && $item['iscorrect'] === 'correct' ); ?>
+                            <tr style="border-top:1px solid #eee;">
+                                <td style="padding:8px;"><?php echo $i + 1; ?></td>
+                                <td style="padding:8px;"><?php echo wp_kses_post( $item['question_text'] ); ?></td>
+                                <td style="padding:8px;"><?php echo esc_html( $item['question_correct_answer'] ?? '' ); ?></td>
+                                <td style="padding:8px;"><?php echo esc_html( $item['question_answer'] ?? '' ); ?></td>
+                                <td style="padding:8px; text-align:center;">
+                                    <?php echo $is_correct
+                                        ? '<span style="color:green; font-weight:bold;">✓</span>'
+                                        : '<span style="color:red; font-weight:bold;">✗</span>'; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-            <hr style="border:0; border-top:1px solid #ddd; margin:20px 0;">
-            <h3>Written Task</h3>
-            <?php foreach ( $results['eupassQ_text']['qanda'] as $t ): ?>
-                <div style="margin-bottom:15px;">
-                    <p><strong>Question:</strong> <?php echo wp_kses_post( $t['question_text'] ); ?></p>
-                    <p><strong>Feedback:</strong> <?php echo esc_html( $t['feedback'] ); ?></p>
-                    <p><strong>Score:</strong> <?php echo esc_html( $t['punteggio_totale'] ); ?></p>
-                </div>
-            <?php endforeach; ?>
+                <!-- WRITTEN TASK -->
+                <h3 style="color:#2a7ae2;"><?php esc_html_e( 'written-task', 'eupassq' ); ?></h3>
+                <?php foreach ( $results['eupassQ_text']['qanda'] as $t ) : ?>
+                    <div style="margin-bottom:20px; border:1px solid #eee; padding:10px; border-radius:6px;">
+                        <p><strong><?php esc_html_e( 'question-question', 'eupassq' ); ?>:</strong> <?php echo wp_kses_post( $t['question_text'] ); ?></p>
+                        <p><strong><?php esc_html_e( 'feedback-feedback', 'eupassq' ); ?>:</strong> <?php echo esc_html( $t['feedback'] ); ?></p>
+                        <p><strong><?php esc_html_e( 'score-score', 'eupassq' ); ?>:</strong> <?php echo esc_html( $t['punteggio_totale'] ); ?></p>
+                    </div>
+                <?php endforeach; ?>
 
-            <hr style="border:0; border-top:1px solid #ddd; margin:20px 0;">
-            <h3>Oral Task</h3>
-            <?php foreach ( $results['eupassQ_audio']['qanda'] as $a ): ?>
-                <div style="margin-bottom:15px;">
-                    <p><strong>Question:</strong> <?php echo wp_kses_post( $a['question_text'] ); ?></p>
-                    <p><strong>Feedback:</strong> <?php echo esc_html( $a['feedback'] ); ?></p>
-                    <p><strong>Score:</strong> <?php echo esc_html( $a['punteggio_totale'] ?? '' ); ?></p>
-                </div>
-            <?php endforeach; ?>
+                <!-- ORAL TASK -->
+                <h3 style="color:#2a7ae2;"><?php esc_html_e( 'oral-task', 'eupassq' ); ?></h3>
+                <?php foreach ( $results['eupassQ_audio']['qanda'] as $a ) : ?>
+                    <div style="margin-bottom:20px; border:1px solid #eee; padding:10px; border-radius:6px;">
+                        <p><strong><?php esc_html_e( 'question-question', 'eupassq' ); ?>:</strong> <?php echo wp_kses_post( $a['question_text'] ); ?></p>
+                        <p><strong><?php esc_html_e( 'feedback-feedback', 'eupassq' ); ?>:</strong> <?php echo esc_html( $a['feedback'] ); ?></p>
+                        <p><strong><?php esc_html_e( 'score-score', 'eupassq' ); ?>:</strong> <?php echo esc_html( $a['punteggio_totale'] ?? '' ); ?></p>
+                    </div>
+                <?php endforeach; ?>
+
+                <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+                <p style="font-size:14px; color:#777; text-align:center;">
+                    <?php esc_html_e( 'auto-email', 'eupassq' ); ?>
+                </p>
+            </div>
         </div>
         <?php
         $message = ob_get_clean();
 
-        // Send the email
         $sent = wp_mail( $to, $subject, $message, $headers );
 
         if ( $sent ) {
@@ -254,6 +287,6 @@ class EupassQTemplate
         }
 
         return $sent;
-
     }
+
 }

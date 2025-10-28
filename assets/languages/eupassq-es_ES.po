@@ -271,3 +271,10 @@ msgstr "Si no ves el correo en tu bandeja de entrada, revisa tu carpeta de spam 
 # templates/results-processed.php
 msgid "results-processed-button"
 msgstr "Volver al inicio"
+
+#. ====================
+#. mailauto
+#. ====================
+
+msgid "auto-email"
+msgstr "Este correo electrónico se generó automáticamente. Por favor, no respondas directamente a este mensaje."

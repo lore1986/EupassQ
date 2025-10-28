@@ -271,3 +271,11 @@ msgstr "Wenn du die E-Mail nicht in deinem Posteingang findest, überprüfe bitt
 # templates/results-processed.php
 msgid "results-processed-button"
 msgstr "Zur Startseite"
+
+
+#. ====================
+#. mailauto
+#. ====================
+
+msgid "auto-email"
+msgstr "Diese E-Mail wurde automatisch erstellt. Bitte antworte nicht direkt auf diese Nachricht."

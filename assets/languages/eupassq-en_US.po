@@ -274,3 +274,10 @@ msgstr "If you don’t see the email in your inbox, please check your spam or pr
 # templates/results-processed.php
 msgid "results-processed-button"
 msgstr "Back to Home"
+
+#. ====================
+#. mailauto
+#. ====================
+
+msgid "auto-email"
+msgstr "This email was generated automatically. Please do not reply directly."
