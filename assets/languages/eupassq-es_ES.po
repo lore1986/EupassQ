@@ -1,37 +1,39 @@
+# Copyright (C) 2025 Jep
+# This file is distributed under the same license as the EupassQ plugin.
 msgid ""
 msgstr ""
 "Project-Id-Version: EupassQ 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/eupassq\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Spanish <LL@li.org>\n"
+"Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-10-23T12:57:20+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Language: \n"
+"PO-Revision-Date: 2025-10-27 00:00+0000\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eupassq\n"
 
 #. Plugin Name of the plugin
 #: eupassq.php
 msgid "EupassQ"
-msgstr ""
+msgstr "EupassQ"
 
 #. Plugin URI of the plugin
 #: eupassq.php
 msgid "---"
-msgstr ""
+msgstr "---"
 
 #. Description of the plugin
 #: eupassq.php
 msgid "A simple quiz plugin that lets admins create questions and serve them to users."
-msgstr ""
+msgstr "Un sencillo complemento de cuestionarios que permite a los administradores crear preguntas y ofrecérselas a los usuarios."
 
 #. Author of the plugin
 #: eupassq.php
 msgid "Jep"
-msgstr ""
+msgstr "Jep"
 
 # assets/templates/quiz-template.php
 msgid "start-test"
@@ -49,6 +51,223 @@ msgstr "Detener grabación"
 msgid "submit-quiz"
 msgstr "Envía tu prueba y obtén tus resultados."
 
-# php_classes/EupassQBridgeQSM.php
-msgid "proceed-next"
-msgstr "Por favor, continúe con la siguiente sección de su prueba."
+# assets/templates/quiz-template.php
+msgid "text-question-heading"
+msgstr "Sección de producción escrita"
+
+# assets/templates/quiz-template.php
+msgid "audio-question-heading"
+msgstr "Sección de producción oral"
+
+#php_classes/templates/results-view-template.php
+msgid "result-summary"
+msgstr "Resumen de tus resultados"
+
+#php_classes/templates/results-view-template.php
+msgid "overall-score"
+msgstr "Puntuación total"
+
+#php_classes/templates/results-view-template.php
+msgid "percentage-score"
+msgstr "Porcentaje"
+
+#php_classes/templates/results-view-template.php
+msgid "multichoice-results"
+msgstr "Preguntas de opción múltiple"
+
+#php_classes/templates/results-view-template.php
+msgid "your-score"
+msgstr "Tu puntuación"
+
+#php_classes/templates/results-view-template.php
+msgid "question-question"
+msgstr "Pregunta"
+
+#php_classes/templates/results-view-template.php
+msgid "score-score"
+msgstr "Puntuación"
+
+#php_classes/templates/results-view-template.php
+msgid "correct-answer-question"
+msgstr "Respuesta correcta"
+
+#php_classes/templates/results-view-template.php
+msgid "your-answer"
+msgstr "Tu respuesta"
+
+#php_classes/templates/results-view-template.php
+msgid "your-result-question"
+msgstr "Resultado"
+
+#php_classes/templates/results-view-template.php
+msgid "written-task"
+msgstr "Tarea escrita"
+
+#php_classes/templates/results-view-template.php
+msgid "score-breakdown"
+msgstr "Desglose de puntuación"
+
+#php_classes/templates/results-view-template.php
+msgid "efficacia-comunicativa"
+msgstr "Eficacia comunicativa"
+
+#php_classes/templates/results-view-template.php
+msgid "correttezza-morfosintattica"
+msgstr "Corrección morfosintáctica"
+
+#php_classes/templates/results-view-template.php
+msgid "lessico-lessico"
+msgstr "Léxico"
+
+#php_classes/templates/results-view-template.php
+msgid "orto-orto"
+msgstr "Ortografía"
+
+#php_classes/templates/results-view-template.php
+msgid "pronuncia-intonazione"
+msgstr "Pronunciación e entonación"
+
+#php_classes/templates/results-view-template.php
+msgid "feedback-feedback"
+msgstr "Retroalimentación"
+
+#php_classes/templates/results-view-template.php
+msgid "oral-task"
+msgstr "Tarea oral"
+
+
+#. ============================================================
+#. Section 1: Header
+#. ============================================================
+
+#php_classes/EupassQBridgeQSM
+msgid "header-intro"
+msgstr "Antes de comenzar la siguiente sección de tu prueba, dedica unos minutos a leer esta breve guía. Te ayudará a entender cómo funciona el test y cómo grabar tus respuestas correctamente."
+
+#. ============================================================
+#. Section 2: Section Overview
+#. ============================================================
+
+#php_classes/EupassQBridgeQSM
+msgid "section-overview-title"
+msgstr "📝 Estructura del Test"
+
+#php_classes/EupassQBridgeQSM
+msgid "section-overview-intro"
+msgstr "El test EupassQ se divide en dos secciones principales:"
+
+#php_classes/EupassQBridgeQSM
+msgid "section-overview-written"
+msgstr "<strong class=\"text-high-start\">Sección de Producción Escrita:</strong> Deberás responder escribiendo tus respuestas en el área de texto proporcionada."
+
+#php_classes/EupassQBridgeQSM
+msgid "section-overview-oral"
+msgstr "<strong class=\"text-high-start\">Sección de Producción Oral:</strong> Grabarás tu voz para responder a las preguntas planteadas."
+
+#php_classes/EupassQBridgeQSM
+msgid "section-overview-important"
+msgstr "⚠️ <strong class=\"text-high-start\">Importante:</strong> Cualquier pregunta dejada en blanco (sin texto o sin grabación) recibirá una puntuación de <strong>0 puntos</strong>."
+
+#. ============================================================
+#. Section 3: Recording Demonstration
+#. ============================================================
+
+#php_classes/EupassQBridgeQSM
+msgid "recording-demo-title"
+msgstr "🎤 Cómo Grabar tu Respuesta"
+
+#php_classes/EupassQBridgeQSM
+msgid "recording-demo-intro"
+msgstr "A continuación puedes ver cómo se muestra la interfaz de grabación. Estos botones son solo de demostración — aquí no grabarán nada realmente."
+
+#php_classes/EupassQBridgeQSM
+msgid "recording-demo-start"
+msgstr "🎙 Iniciar grabación"
+
+#php_classes/EupassQBridgeQSM
+msgid "recording-demo-stop"
+msgstr "⏹ Detener grabación"
+
+#php_classes/EupassQBridgeQSM
+msgid "recording-demo-instructions"
+msgstr "➤ Cuando hagas clic en <strong>Iniciar grabación</strong>, el sistema comenzará a capturar tu voz.<br>➤ Cuando termines de hablar, haz clic en <strong>Detener grabación</strong>.<br>➤ Aparecerá un pequeño reproductor de audio que te permitirá <strong>escuchar tu grabación</strong>.<br>➤ <strong class=\"text-high-start\">Nota:</strong> El tiempo máximo de grabación es de <span class=\"text-danger fw-semibold\">1 minuto</span> por pregunta. Planifica tu respuesta en consecuencia.<br>➤ Si deseas volver a grabar tu respuesta, simplemente haz clic de nuevo en el botón correspondiente de <strong>Iniciar grabación</strong> — la nueva grabación reemplazará la anterior."
+
+#php_classes/EupassQBridgeQSM
+msgid "recording-demo-error"
+msgstr "Si tu grabación es demasiado baja o hay un problema al procesar el audio, aparecerá un mensaje de error (por ejemplo, <em>\"Voz demasiado baja\"</em> o <em>\"Error al procesar el audio\"</em>)."
+
+#. ============================================================
+#. Section 4: Results Information
+#. ============================================================
+
+#php_classes/EupassQBridgeQSM
+msgid "results-info-title"
+msgstr "📊 Después de Enviar tu Prueba"
+
+#php_classes/EupassQBridgeQSM
+msgid "results-info-item1"
+msgstr "Tus respuestas serán procesadas automáticamente por nuestro sistema utilizando la <strong>tecnología OpenAI</strong>."
+
+#php_classes/EupassQBridgeQSM
+msgid "results-info-item2"
+msgstr "Ten en cuenta que la evaluación automática puede incluir pequeñas inexactitudes — todos los resultados son revisados cuando es necesario."
+
+#php_classes/EupassQBridgeQSM
+msgid "results-info-item3"
+msgstr "Una vez completado, serás redirigido a una <strong>Página de Resultados</strong> donde verás:"
+
+#php_classes/EupassQBridgeQSM
+msgid "results-info-item4a"
+msgstr "Tus <strong class=\"text-high-start\">resultados de opción múltiple</strong> anteriores"
+
+#php_classes/EupassQBridgeQSM
+msgid "results-info-item4b"
+msgstr "Tu <strong class=\"text-high-start\">puntuación en producción escrita</strong>"
+
+#php_classes/EupassQBridgeQSM
+msgid "results-info-item4c"
+msgstr "Tu <strong class=\"text-high-start\">puntuación en producción oral</strong>"
+
+#php_classes/EupassQBridgeQSM
+msgid "results-info-item5"
+msgstr "Un resumen detallado de tus resultados también será enviado a tu dirección de correo electrónico."
+
+#. ============================================================
+#. Section 5: Closing Message
+#. ============================================================
+
+#php_classes/EupassQBridgeQSM
+msgid "closing-message-text"
+msgstr "<p class=\"lead mb-4 fw-semibold text-high-start\">¡Muchas gracias y buena suerte con tu prueba!</p>"
+
+#php_classes/EupassQBridgeQSM
+msgid "closing-message-button"
+msgstr "Comenzar el Test"
+
+#. ====================
+#. grader
+#. ====================
+
+#php_classes/EupassQGrader.php
+msgid "audio-not-elaborate"
+msgstr "No pudimos procesar el audio. Por favor, revisa la calidad de la grabación o inténtalo nuevamente."
+
+#. ====================
+#. expired template
+#. ====================
+
+# templates/results-processed.php
+msgid "results-processed-title"
+msgstr "¡Tus resultados han sido enviados!"
+
+# templates/results-processed.php
+msgid "results-processed-lead"
+msgstr "Gracias por completar tu prueba. Nuestro sistema ya ha procesado tus respuestas y un resumen detallado de tus resultados ha sido enviado al correo electrónico que proporcionaste."
+
+# templates/results-processed.php
+msgid "results-processed-followup"
+msgstr "Si no ves el correo en tu bandeja de entrada, revisa tu carpeta de spam o promociones. Para más ayuda, puedes contactar a nuestro equipo de soporte."
+
+# templates/results-processed.php
+msgid "results-processed-button"
+msgstr "Volver al inicio"

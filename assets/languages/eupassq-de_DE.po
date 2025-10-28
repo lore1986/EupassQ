@@ -5,127 +5,127 @@ msgstr ""
 "Project-Id-Version: EupassQ 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/eupassq\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: German <LL@li.org>\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-10-23T12:57:20+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2025-10-27 00:00+0000\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eupassq\n"
 
 #. Plugin Name of the plugin
 #: eupassq.php
 msgid "EupassQ"
-msgstr ""
+msgstr "EupassQ"
 
 #. Plugin URI of the plugin
 #: eupassq.php
 msgid "---"
-msgstr ""
+msgstr "---"
 
 #. Description of the plugin
 #: eupassq.php
 msgid "A simple quiz plugin that lets admins create questions and serve them to users."
-msgstr ""
+msgstr "Ein einfaches Quiz-Plugin, mit dem Administratoren Fragen erstellen und sie Benutzern bereitstellen können."
 
 #. Author of the plugin
 #: eupassq.php
 msgid "Jep"
-msgstr ""
+msgstr "Jep"
 
 # assets/templates/quiz-template.php
 msgid "start-test"
-msgstr "Text and Audio production Test Section"
+msgstr "Abschnitt für Text- und Audioproduktion"
 
 # assets/templates/quiz-template.php
 msgid "start-recording"
-msgstr "Start Recording"
+msgstr "Aufnahme starten"
 
 # assets/templates/quiz-template.php
 msgid "stop-recording"
-msgstr "Stop Recording"
+msgstr "Aufnahme beenden"
 
 # assets/templates/quiz-template.php
 msgid "submit-quiz"
-msgstr "Submit your test and get your results."
+msgstr "Reiche deinen Test ein und erhalte dein Ergebnis."
 
 # assets/templates/quiz-template.php
 msgid "text-question-heading"
-msgstr "Written Production Section"
+msgstr "Schriftlicher Produktionsabschnitt"
 
 # assets/templates/quiz-template.php
 msgid "audio-question-heading"
-msgstr "Audio Production Section"
+msgstr "Mündlicher Produktionsabschnitt"
 
 #php_classes/templates/results-view-template.php
 msgid "result-summary"
-msgstr "Your Results Summary"
+msgstr "Zusammenfassung deiner Ergebnisse"
 
 #php_classes/templates/results-view-template.php
 msgid "overall-score"
-msgstr "Overall Score"
+msgstr "Gesamtpunktzahl"
 
 #php_classes/templates/results-view-template.php
 msgid "percentage-score"
-msgstr "Percentage"
+msgstr "Prozentsatz"
 
 #php_classes/templates/results-view-template.php
 msgid "multichoice-results"
-msgstr "Multiple Choice Questions"
+msgstr "Multiple-Choice-Fragen"
 
 #php_classes/templates/results-view-template.php
 msgid "your-score"
-msgstr "Your Score"
+msgstr "Deine Punktzahl"
 
 #php_classes/templates/results-view-template.php
 msgid "question-question"
-msgstr "Question"
+msgstr "Frage"
 
 #php_classes/templates/results-view-template.php
 msgid "score-score"
-msgstr "Score"
+msgstr "Bewertung"
 
 #php_classes/templates/results-view-template.php
 msgid "correct-answer-question"
-msgstr "Correct Answer"
+msgstr "Richtige Antwort"
 
 #php_classes/templates/results-view-template.php
 msgid "your-answer"
-msgstr "Answer"
+msgstr "Deine Antwort"
 
 #php_classes/templates/results-view-template.php
 msgid "your-result-question"
-msgstr "Result"
+msgstr "Ergebnis"
 
 #php_classes/templates/results-view-template.php
 msgid "written-task"
-msgstr "Written Task"
+msgstr "Schriftliche Aufgabe"
 
 #php_classes/templates/results-view-template.php
 msgid "score-breakdown"
-msgstr "Score Breakdown"
+msgstr "Bewertungsübersicht"
 
 #php_classes/templates/results-view-template.php
 msgid "efficacia-comunicativa"
-msgstr "Communicative Effectiveness"
+msgstr "Kommunikative Wirksamkeit"
 
 #php_classes/templates/results-view-template.php
 msgid "correttezza-morfosintattica"
-msgstr "Morphosyntactic correctness"
+msgstr "Morphosyntaktische Korrektheit"
 
 #php_classes/templates/results-view-template.php
 msgid "lessico-lessico"
-msgstr "Lexicon"
+msgstr "Wortschatz"
 
 #php_classes/templates/results-view-template.php
 msgid "orto-orto"
-msgstr "Spelling"
+msgstr "Rechtschreibung"
 
 #php_classes/templates/results-view-template.php
 msgid "pronuncia-intonazione"
-msgstr "Pronunciation and Intonation"
-
+msgstr "Aussprache und Intonation"
 
 #php_classes/templates/results-view-template.php
 msgid "feedback-feedback"
@@ -133,8 +133,7 @@ msgstr "Feedback"
 
 #php_classes/templates/results-view-template.php
 msgid "oral-task"
-msgstr "Oral Task"
-
+msgstr "Mündliche Aufgabe"
 
 #. ============================================================
 #. Section 1: Header
@@ -142,7 +141,7 @@ msgstr "Oral Task"
 
 #php_classes/EupassQBridgeQSM
 msgid "header-intro"
-msgstr "Before you begin the next section of your test, please take a few minutes to read this short guide. It will help you understand how the test works and how to record your answers correctly."
+msgstr "Bevor du mit dem nächsten Abschnitt deines Tests beginnst, nimm dir bitte ein paar Minuten Zeit, um diese kurze Anleitung zu lesen. Sie hilft dir zu verstehen, wie der Test funktioniert und wie du deine Antworten korrekt aufnimmst."
 
 #. ============================================================
 #. Section 2: Section Overview
@@ -150,23 +149,23 @@ msgstr "Before you begin the next section of your test, please take a few minute
 
 #php_classes/EupassQBridgeQSM
 msgid "section-overview-title"
-msgstr "📝 Test Structure"
+msgstr "📝 Teststruktur"
 
 #php_classes/EupassQBridgeQSM
 msgid "section-overview-intro"
-msgstr "The EupassQ test is divided into two main sections:"
+msgstr "Der EupassQ-Test ist in zwei Hauptabschnitte unterteilt:"
 
 #php_classes/EupassQBridgeQSM
 msgid "section-overview-written"
-msgstr "<strong class=\"text-high-start\">Written Production Section:</strong> You will answer questions by typing your responses in the text area provided."
+msgstr "<strong class=\"text-high-start\">Schriftlicher Produktionsabschnitt:</strong> Du beantwortest Fragen, indem du deine Antworten in das bereitgestellte Textfeld schreibst."
 
 #php_classes/EupassQBridgeQSM
 msgid "section-overview-oral"
-msgstr "<strong class=\"text-high-start\">Oral Production Section:</strong> You will record your voice to answer the given questions."
+msgstr "<strong class=\"text-high-start\">Mündlicher Produktionsabschnitt:</strong> Du nimmst deine Stimme auf, um die gestellten Fragen zu beantworten."
 
 #php_classes/EupassQBridgeQSM
 msgid "section-overview-important"
-msgstr "⚠️ <strong class=\"text-high-start\">Important:</strong> Any question left blank (no written text or no audio recording) will receive a score of <strong>0 points</strong>."
+msgstr "⚠️ <strong class=\"text-high-start\">Wichtig:</strong> Jede unbeantwortete Frage (kein Text oder keine Audioaufnahme) erhält eine Punktzahl von <strong>0 Punkten</strong>."
 
 #. ============================================================
 #. Section 3: Recording Demonstration
@@ -174,27 +173,27 @@ msgstr "⚠️ <strong class=\"text-high-start\">Important:</strong> Any questio
 
 #php_classes/EupassQBridgeQSM
 msgid "recording-demo-title"
-msgstr "🎤 How to Record Your Answer"
+msgstr "🎤 So nimmst du deine Antwort auf"
 
 #php_classes/EupassQBridgeQSM
 msgid "recording-demo-intro"
-msgstr "Below you can see how the recording interface looks. These buttons are just for demonstration — they won’t actually record anything here."
+msgstr "Unten siehst du, wie die Aufnahmeoberfläche aussieht. Diese Schaltflächen dienen nur der Demonstration — hier wird nichts tatsächlich aufgenommen."
 
 #php_classes/EupassQBridgeQSM
 msgid "recording-demo-start"
-msgstr "🎙 Start Recording"
+msgstr "🎙 Aufnahme starten"
 
 #php_classes/EupassQBridgeQSM
 msgid "recording-demo-stop"
-msgstr "⏹ Stop Recording"
+msgstr "⏹ Aufnahme beenden"
 
 #php_classes/EupassQBridgeQSM
 msgid "recording-demo-instructions"
-msgstr "➤ When you click <strong>Start Recording</strong>, the system begins capturing your voice.<br>➤ Once you finish speaking, click <strong>Stop Recording</strong>.<br>➤ A small audio player will appear, allowing you to <strong>listen to your recording</strong>.<br>➤ <strong class=\"text-high-start\">Note:</strong> The maximum recording time is <span class=\"text-danger fw-semibold\">1 minute</span> per question. Please plan your response accordingly.<br>➤ If you want to re-record your answer, simply click the corresponding <strong>Start Recording</strong> button again — the new recording will replace the old one."
+msgstr "➤ Wenn du auf <strong>Aufnahme starten</strong> klickst, beginnt das System, deine Stimme aufzunehmen.<br>➤ Wenn du fertig bist, klicke auf <strong>Aufnahme beenden</strong>.<br>➤ Ein kleiner Audioplayer erscheint, mit dem du <strong>deine Aufnahme anhören</strong> kannst.<br>➤ <strong class=\"text-high-start\">Hinweis:</strong> Die maximale Aufnahmezeit beträgt <span class=\"text-danger fw-semibold\">1 Minute</span> pro Frage. Plane deine Antwort entsprechend.<br>➤ Wenn du deine Antwort erneut aufnehmen möchtest, klicke einfach erneut auf die Schaltfläche <strong>Aufnahme starten</strong> — die neue Aufnahme ersetzt die alte."
 
 #php_classes/EupassQBridgeQSM
 msgid "recording-demo-error"
-msgstr "If your recording is too quiet or there’s an issue processing the audio, you’ll see an error message (e.g., <em>\"Voice too low\"</em> or <em>\"Error processing audio\"</em>)."
+msgstr "Wenn deine Aufnahme zu leise ist oder ein Problem bei der Audiobearbeitung auftritt, wird eine Fehlermeldung angezeigt (z. B. <em>„Stimme zu leise“</em> oder <em>„Fehler bei der Audiobearbeitung“</em>)."
 
 #. ============================================================
 #. Section 4: Results Information
@@ -202,35 +201,35 @@ msgstr "If your recording is too quiet or there’s an issue processing the audi
 
 #php_classes/EupassQBridgeQSM
 msgid "results-info-title"
-msgstr "📊 After Submitting Your Test"
+msgstr "📊 Nach dem Absenden deines Tests"
 
 #php_classes/EupassQBridgeQSM
 msgid "results-info-item1"
-msgstr "Your answers will be processed automatically by our system using <strong>OpenAI technology</strong>."
+msgstr "Deine Antworten werden automatisch von unserem System unter Verwendung der <strong>OpenAI-Technologie</strong> verarbeitet."
 
 #php_classes/EupassQBridgeQSM
 msgid "results-info-item2"
-msgstr "Keep in mind that automatic evaluation may include small inaccuracies — all results are reviewed where necessary."
+msgstr "Beachte, dass die automatische Bewertung kleine Ungenauigkeiten enthalten kann — alle Ergebnisse werden bei Bedarf überprüft."
 
 #php_classes/EupassQBridgeQSM
 msgid "results-info-item3"
-msgstr "Once completed, you’ll be redirected to a <strong>Results Page</strong> where you’ll see:"
+msgstr "Nach Abschluss wirst du auf eine <strong>Ergebnisseite</strong> weitergeleitet, auf der du Folgendes sehen kannst:"
 
 #php_classes/EupassQBridgeQSM
 msgid "results-info-item4a"
-msgstr "Your previous <strong class=\"text-high-start\">multiple-choice results</strong>"
+msgstr "Deine vorherigen <strong class=\"text-high-start\">Multiple-Choice-Ergebnisse</strong>"
 
 #php_classes/EupassQBridgeQSM
 msgid "results-info-item4b"
-msgstr "Your <strong class=\"text-high-start\">written production score</strong>"
+msgstr "Deine <strong class=\"text-high-start\">Bewertung der schriftlichen Produktion</strong>"
 
 #php_classes/EupassQBridgeQSM
 msgid "results-info-item4c"
-msgstr "Your <strong class=\"text-high-start\">oral production score</strong>"
+msgstr "Deine <strong class=\"text-high-start\">Bewertung der mündlichen Produktion</strong>"
 
 #php_classes/EupassQBridgeQSM
 msgid "results-info-item5"
-msgstr "A detailed summary of your results will also be sent to your email address."
+msgstr "Eine detaillierte Zusammenfassung deiner Ergebnisse wird ebenfalls an deine E-Mail-Adresse gesendet."
 
 #. ============================================================
 #. Section 5: Closing Message
@@ -238,39 +237,37 @@ msgstr "A detailed summary of your results will also be sent to your email addre
 
 #php_classes/EupassQBridgeQSM
 msgid "closing-message-text"
-msgstr "<p class=\"lead mb-4 fw-semibold text-high-start\">Many thanks, and good luck with your test!</p>"
+msgstr "<p class=\"lead mb-4 fw-semibold text-high-start\">Vielen Dank und viel Erfolg bei deinem Test!</p>"
 
 #php_classes/EupassQBridgeQSM
 msgid "closing-message-button"
-msgstr "Start the Quiz"
-
+msgstr "Test starten"
 
 #. ====================
 #. grader
 #. ====================
 
-
 #php_classes/EupassQGrader.php
 msgid "audio-not-elaborate"
-msgstr "We could not elaborate the audio. Please check the recording quality or try again."
-
+msgstr "Das Audio konnte nicht verarbeitet werden. Bitte überprüfe die Aufnahmequalität oder versuche es erneut."
 
 #. ====================
 #. expired template
 #. ====================
 
+
 # templates/results-processed.php
 msgid "results-processed-title"
-msgstr "Your Results Have Been Sent!"
+msgstr "Deine Ergebnisse wurden gesendet!"
 
 # templates/results-processed.php
 msgid "results-processed-lead"
-msgstr "Thank you for completing your test. Our system has already processed your responses, and a detailed summary of your results has been emailed to the address you provided."
+msgstr "Vielen Dank, dass du deinen Test abgeschlossen hast. Unser System hat deine Antworten bereits verarbeitet, und eine detaillierte Zusammenfassung deiner Ergebnisse wurde an die von dir angegebene E-Mail-Adresse gesendet."
 
 # templates/results-processed.php
 msgid "results-processed-followup"
-msgstr "If you don’t see the email in your inbox, please check your spam or promotions folder. For further assistance, you can contact our support team."
+msgstr "Wenn du die E-Mail nicht in deinem Posteingang findest, überprüfe bitte deinen Spam- oder Werbeordner. Für weitere Unterstützung kannst du unser Support-Team kontaktieren."
 
 # templates/results-processed.php
 msgid "results-processed-button"
-msgstr "Back to Home"
+msgstr "Zur Startseite"

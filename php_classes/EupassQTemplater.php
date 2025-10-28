@@ -78,10 +78,6 @@ class EupassQTemplate
             $cached_results = get_transient('eupassq_result_' . $results_id);
 
             if ($cached_results === false) {
-   
-                if (!isset($this->qM) || !isset($this->dbGb)) {
-                    wp_die('Quiz Manager or Database object not available.');
-                }
 
                 $results = $this->grader->EupassQ_Handle_Submissions($results_id, $qsm_id);
                 set_transient('eupassq_result_' . $results_id, $results, 600);
@@ -107,7 +103,19 @@ class EupassQTemplate
             $results = get_transient('eupassq_result_' . $results_view_id);
 
             if ($results === false) {
-                wp_die('No saved results found or results expired.');
+
+                //here
+                $template_path = plugin_dir_path(__FILE__) . '../assets/templates/result-expired-template.php';
+
+                if (!file_exists($template_path)) {
+                    wp_die('Template not found: ' . esc_html($template_path));
+                }
+
+
+                include $template_path;
+
+                exit;
+                
             }
 
 

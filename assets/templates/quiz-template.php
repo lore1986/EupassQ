@@ -17,9 +17,7 @@ $audio_questions = array_filter($question_pool, fn($q) => $q['euqtpe'] !== 'text
 <div class="wrap">
     <div class="EupassQ-style">
         <div class="container mt-4">
-            <div class="row text-center m-2">
-                <h2><?php esc_attr_e('start-test', 'eupassq'); ?></h2>
-            </div>
+            <!--  -->
 
             <form id="eupassq_quiz_form" class="EupassQ-form">
                 <input type="hidden" value="<?php echo esc_attr($user_info); ?>" name="user_info" />
@@ -29,7 +27,7 @@ $audio_questions = array_filter($question_pool, fn($q) => $q['euqtpe'] !== 'text
                 <!-- TEXT QUESTIONS SECTION -->
                 <!-- ============================= -->
                 <?php if (!empty($text_questions)) : ?>
-                    <h3 class="mt-5 mb-3 text-primary border-bottom pb-2">
+                    <h3 class="mt-5 mb-3 custom-border-bottom pb-2">
                         📝 <?php esc_attr_e('text-question-heading', 'eupassq'); ?>
                     </h3>
                     <?php foreach ($text_questions as $index => $question) : ?>
@@ -46,7 +44,7 @@ $audio_questions = array_filter($question_pool, fn($q) => $q['euqtpe'] !== 'text
                                 <textarea 
                                     name="eupassq_qansw[<?php echo $index; ?>]"
                                     class="form-control EupassQ-input"
-                                    rows="3"
+                                    rows="8"
                                     placeholder="<?php esc_attr_e('Type your answer here...', 'eupassq'); ?>"></textarea>
 
                                 <input type="hidden" 
@@ -62,7 +60,7 @@ $audio_questions = array_filter($question_pool, fn($q) => $q['euqtpe'] !== 'text
                 <!-- AUDIO QUESTIONS SECTION -->
                 <!-- ============================= -->
                 <?php if (!empty($audio_questions)) : ?>
-                    <h3 class="mt-5 mb-3 text-success border-bottom pb-2">
+                    <h3 class="mt-5 mb-3 custom-border-bottom pb-2">
                         🎤 <?php esc_attr_e('audio-question-heading', 'eupassq'); ?>
                     </h3>
                     <?php foreach ($audio_questions as $index => $question) : ?>
@@ -152,4 +150,5 @@ document.addEventListener('visibilitychange', function () {
     if (nav && nav.type === 'back_forward') hideSpinner();
   }
 });
+
 </script>

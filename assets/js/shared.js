@@ -58,9 +58,14 @@ async function ajaxCall(uuiid) {
   hideSpinner();
   
   if (res?.data?.exist) {
-
-    const uniqueQSMId = res.data.uidq;
+    
     const urlR = res.data.link;
+
+    const header = res.data.header;
+    const section_overview = res.data.section_overview;
+    const recording_demo = res.data.recording_demo;
+    const results_info = res.data.results_info;
+    const closing_message = res.data.closing_message;
 
     const templateUrl = EupQ_Ajax_Obj.templatesUrl + 'starteupassq.html';
   
@@ -69,8 +74,12 @@ async function ajaxCall(uuiid) {
       const compiledTemplate = _.template(templateHtml);
 
       const rendered_underscore = compiledTemplate({
-        qsmid : uniqueQSMId,
-        urlR  : urlR
+        urlR: urlR,
+        header: header,
+        section_overview: section_overview,
+        recording_demo: recording_demo,
+        results_info: results_info,
+        closing_message: closing_message
       })
 
       const container = document.getElementById('main');

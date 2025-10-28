@@ -199,7 +199,8 @@
 }
 .EupassQ-style {
   margin: 0;
-  font-family: var(--bs-body-font-family);
+	font-family: var(--font-primary), sans-serif;
+  /* font-family: var(--bs-body-font-family); */
   font-size: var(--bs-body-font-size);
   font-weight: var(--bs-body-font-weight);
   line-height: var(--bs-body-line-height);
@@ -229,10 +230,12 @@
 .EupassQ-style h5,
 .EupassQ-style h6 {
   margin-top: 0;
+  font-family: var(--font-alt);
   margin-bottom: 0.5rem;
   font-weight: 500;
   line-height: 1.2;
-  color: var(--bs-heading-color);
+  color: var(--color-accent);
+  font-family: var(--font-alt);
 }
 .EupassQ-style .h1,
 .EupassQ-style h1 {
@@ -257,6 +260,8 @@
 .EupassQ-style .h3,
 .EupassQ-style h3 {
   font-size: calc(1.3rem + 0.6vw);
+  font-weight: 800;
+  color: var(--color-links);
 }
 @media (min-width: 1200px) {
   .EupassQ-style .h3,
